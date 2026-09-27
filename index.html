@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Mizi - AI Chinese Novel Library & Translator</title>
+  
+  <!-- Optimized Font Loading -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet">
@@ -28,12 +30,15 @@
       --radius: 12px;
       --radius-sm: 8px;
       --radius-lg: 18px;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.06);
-      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.08);
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
       --font-ui: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-      --font-reader: 'Lora', serif;
-      --font-chinese: 'Noto Serif SC', serif;
+      --font-reader: 'Lora', Georgia, serif;
+      --font-chinese: 'Noto Serif SC', 'Songti SC', serif;
+      --font-size: 18px;
+      --line-height: 1.8;
+      --para-spacing: 20px;
     }
 
     [data-theme="dark"] {
@@ -52,14 +57,21 @@
       --accent-light: #78350F;
     }
 
-    /* Reader Color Themes */
+    /* Reader Palettes */
     .reader-theme-parchment { --reader-bg: #FBF0D9; --reader-text: #2C2416; --reader-border: #EADBBA; }
     .reader-theme-jade { --reader-bg: #EAF4EE; --reader-text: #132E22; --reader-border: #C8E3D2; }
     .reader-theme-dark { --reader-bg: #111827; --reader-text: #E5E7EB; --reader-border: #374151; }
     .reader-theme-light { --reader-bg: #FFFFFF; --reader-text: #1E293B; --reader-border: #E2E8F0; }
     .reader-theme-sepia { --reader-bg: #F4ECD8; --reader-text: #423629; --reader-border: #DFD4BE; }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
     body {
       font-family: var(--font-ui);
       background-color: var(--bg);
@@ -70,6 +82,7 @@
       height: 100vh;
       height: 100dvh;
       overflow: hidden;
+      user-select: none;
     }
 
     /* App Header */
@@ -82,12 +95,43 @@
       justify-content: space-between;
       z-index: 40;
       flex-shrink: 0;
+      transform: translateZ(0);
     }
-    .brand { display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; }
-    .brand-logo { width: 38px; height: 38px; flex-shrink: 0; filter: drop-shadow(0 2px 4px rgba(5, 150, 105, 0.25)); }
-    .brand-title { font-weight: 700; font-size: 1.25rem; letter-spacing: -0.02em; color: var(--text); line-height: 1.1; }
-    .brand-subtitle { font-size: 0.68rem; color: var(--text-muted); font-weight: 500; display: block; }
-    .header-actions { display: flex; align-items: center; gap: 8px; }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      flex-shrink: 0;
+      filter: drop-shadow(0 2px 4px rgba(5, 150, 105, 0.25));
+    }
+
+    .brand-title {
+      font-weight: 700;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      line-height: 1.1;
+    }
+
+    .brand-subtitle {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      display: block;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
     .btn-icon {
       background: transparent;
@@ -100,20 +144,34 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: background 0.15s;
     }
-    .btn-icon:hover { background: var(--surface-variant); border-color: var(--border); }
-
-    /* Main Container & Screens */
-    main.app-main { flex: 1; overflow-y: auto; position: relative; background: var(--bg); }
-    .screen { display: none; padding: 16px; max-width: 900px; margin: 0 auto; animation: fadeIn 0.2s ease-out; }
-    .screen.active { display: block; }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
+    .btn-icon:active {
+      background: var(--surface-variant);
+      transform: scale(0.96);
     }
 
-    /* Navigation Bar */
+    /* Main Container & Screen Views (Zero-lag switching) */
+    main.app-main {
+      flex: 1;
+      overflow-y: auto;
+      position: relative;
+      background: var(--bg);
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .screen {
+      display: none;
+      padding: 16px;
+      max-width: 900px;
+      margin: 0 auto;
+      transform: translateZ(0);
+    }
+    .screen.active {
+      display: block;
+    }
+
+    /* App Navigation */
     nav.app-nav {
       background: var(--surface);
       border-top: 1px solid var(--border);
@@ -122,7 +180,9 @@
       padding: 6px 12px;
       z-index: 40;
       flex-shrink: 0;
+      transform: translateZ(0);
     }
+
     .nav-tab {
       display: flex;
       flex-direction: column;
@@ -136,14 +196,22 @@
       cursor: pointer;
       font-size: 0.72rem;
       font-weight: 600;
-      transition: all 0.15s ease;
-      min-width: 60px;
+      min-width: 64px;
+      transition: color 0.1s;
     }
-    .nav-tab svg { width: 22px; height: 22px; transition: transform 0.15s; }
-    .nav-tab.active { color: var(--primary); }
-    .nav-tab.active svg { transform: translateY(-2px); }
+    .nav-tab svg {
+      width: 22px;
+      height: 22px;
+      transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .nav-tab.active {
+      color: var(--primary);
+    }
+    .nav-tab.active svg {
+      transform: translateY(-2px);
+    }
 
-    /* Buttons & Form Controls */
+    /* Common Buttons */
     .btn {
       display: inline-flex;
       align-items: center;
@@ -156,8 +224,11 @@
       font-weight: 600;
       cursor: pointer;
       border: 1px solid transparent;
-      transition: all 0.15s ease;
+      transition: background 0.15s, transform 0.1s;
       text-decoration: none;
+    }
+    .btn:active {
+      transform: scale(0.97);
     }
     .btn-primary { background: var(--primary); color: var(--on-primary); }
     .btn-primary:hover { background: var(--primary-dark); }
@@ -165,10 +236,11 @@
     .btn-outline:hover { background: var(--surface-variant); }
     .btn-accent { background: var(--accent); color: #78350F; }
     .btn-accent:hover { background: #D97706; color: #FFFFFF; }
-    .btn-sm { padding: 5px 10px; font-size: 0.75rem; border-radius: var(--radius-sm); }
+    .btn-sm { padding: 5px 12px; font-size: 0.78rem; border-radius: var(--radius-sm); }
     .btn-danger { background: #FEE2E2; color: #991B1B; }
     .btn-danger:hover { background: #EF4444; color: #FFFFFF; }
 
+    /* Form Controls */
     .form-group { margin-bottom: 16px; }
     .form-label {
       display: block;
@@ -196,7 +268,7 @@
       box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
     }
 
-    /* Cards & Grids */
+    /* Cards */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -205,11 +277,25 @@
       box-shadow: var(--shadow-sm);
       margin-bottom: 16px;
     }
-    .bookshelf-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+
+    /* Bookshelf Grid */
+    .bookshelf-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
     .bookshelf-title { font-size: 1.35rem; font-weight: 700; }
-    .novel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
+    .novel-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 16px;
+    }
     @media (min-width: 640px) {
-      .novel-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+      .novel-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+      }
     }
     .novel-card {
       background: var(--surface);
@@ -220,9 +306,10 @@
       display: flex;
       flex-direction: column;
       box-shadow: var(--shadow-sm);
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: transform 0.15s, box-shadow 0.15s;
     }
-    .novel-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .novel-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+    .novel-card:active { transform: scale(0.98); }
     .novel-cover {
       height: 180px;
       background: linear-gradient(135deg, #064E3B 0%, #0F3A2E 50%, #042F2E 100%);
@@ -234,12 +321,17 @@
       color: #FFFFFF;
       overflow: hidden;
     }
-    .novel-cover img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.85; }
+    .novel-cover img {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0.85;
+    }
     .novel-cover-badge {
       position: absolute;
       top: 10px;
       right: 10px;
-      background: rgba(0,0,0,0.6);
+      background: rgba(0,0,0,0.65);
       backdrop-filter: blur(4px);
       color: #FBBF24;
       padding: 3px 7px;
@@ -252,7 +344,7 @@
       font-size: 0.95rem;
       font-weight: 700;
       line-height: 1.2;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+      text-shadow: 0 2px 4px rgba(0,0,0,0.85);
       position: relative;
       z-index: 2;
     }
@@ -264,17 +356,42 @@
       z-index: 2;
       margin-top: 2px;
     }
-    .novel-info { padding: 10px 12px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
-    .novel-author { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 6px; }
-    .progress-bar { height: 4px; background: var(--surface-variant); border-radius: 2px; overflow: hidden; margin-top: 6px; }
+    .novel-info {
+      padding: 10px 12px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .novel-author {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .progress-bar {
+      height: 4px;
+      background: var(--surface-variant);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
     .progress-fill { height: 100%; background: var(--primary); }
-    .novel-stats { font-size: 0.7rem; color: var(--text-muted); display: flex; justify-content: space-between; margin-top: 4px; }
+    .novel-stats {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      margin-top: 4px;
+    }
 
-    /* Modals */
+    /* Modal / Popups */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0,0,0,0.55);
       backdrop-filter: blur(4px);
       z-index: 60;
       display: none;
@@ -292,19 +409,33 @@
       max-height: 90vh;
       overflow-y: auto;
       box-shadow: var(--shadow-lg);
-      animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: translateZ(0);
     }
-    @keyframes modalPop {
-      from { opacity: 0; transform: scale(0.96); }
-      to { opacity: 1; transform: scale(1); }
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
-    .modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
     .modal-title { font-weight: 700; font-size: 1.1rem; }
     .modal-body { padding: 20px; }
-    .modal-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
+    .modal-footer {
+      padding: 14px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
 
-    /* Reader View */
-    #screen-reader { max-width: 100%; padding: 0; height: 100%; display: none; flex-direction: column; }
+    /* Reader Screen */
+    #screen-reader {
+      max-width: 100%;
+      padding: 0;
+      height: 100%;
+      display: none;
+      flex-direction: column;
+    }
     #screen-reader.active { display: flex; }
     .reader-toolbar {
       background: var(--surface);
@@ -317,17 +448,36 @@
       gap: 8px;
     }
     .reader-title-box { flex: 1; min-width: 0; }
-    .reader-chap-title { font-size: 0.95rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .reader-chap-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
     .reader-novel-title { font-size: 0.72rem; color: var(--text-muted); }
     .reader-content-wrap {
       flex: 1;
       overflow-y: auto;
       background: var(--reader-bg, #FBF0D9);
       color: var(--reader-text, #2C2416);
-      transition: background-color 0.2s, color 0.2s;
+      -webkit-overflow-scrolling: touch;
+      user-select: text;
     }
-    .reader-article { max-width: 760px; margin: 0 auto; padding: 32px 24px 80px 24px; font-family: var(--font-reader); }
-    .reader-article h1 { font-family: 'Cinzel', serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 8px; line-height: 1.3; text-align: center; }
+    .reader-article {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 32px 24px 80px 24px;
+      font-family: var(--font-reader);
+    }
+    .reader-article h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.55rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      line-height: 1.3;
+      text-align: center;
+    }
     .reader-article .raw-title-sub {
       text-align: center;
       font-family: var(--font-chinese);
@@ -337,16 +487,34 @@
       padding-bottom: 16px;
       border-bottom: 1px solid rgba(0,0,0,0.1);
     }
-    .reader-paragraph { margin-bottom: 18px; line-height: 1.8; font-size: var(--font-size, 18px); text-align: justify; }
+    .reader-paragraph {
+      margin-bottom: var(--para-spacing, 20px);
+      line-height: var(--line-height, 1.8);
+      font-size: var(--font-size, 18px);
+      text-align: justify;
+      text-indent: 1.5em;
+    }
     .dual-pair {
       margin-bottom: 24px;
-      padding: 10px 14px;
+      padding: 12px 16px;
       border-radius: var(--radius-sm);
       border-left: 3px solid var(--primary);
-      background: rgba(0,0,0,0.02);
+      background: rgba(0,0,0,0.025);
     }
-    .dual-raw { font-family: var(--font-chinese); font-size: calc(var(--font-size, 18px) - 2px); line-height: 1.6; opacity: 0.8; margin-bottom: 8px; }
-    .dual-trans { font-family: var(--font-reader); font-size: var(--font-size, 18px); line-height: 1.8; }
+    .dual-raw {
+      font-family: var(--font-chinese);
+      font-size: calc(var(--font-size, 18px) - 2px);
+      line-height: 1.6;
+      opacity: 0.8;
+      margin-bottom: 8px;
+      text-indent: 1.5em;
+    }
+    .dual-trans {
+      font-family: var(--font-reader);
+      font-size: var(--font-size, 18px);
+      line-height: var(--line-height, 1.8);
+      text-indent: 1.5em;
+    }
     .reader-footer-nav {
       display: flex;
       align-items: center;
@@ -355,6 +523,7 @@
       margin-top: 40px;
       padding-top: 24px;
       border-top: 1px dashed rgba(0,0,0,0.15);
+      user-select: none;
     }
 
     .spinner {
@@ -363,17 +532,18 @@
       border: 2px solid currentColor;
       border-right-color: transparent;
       border-radius: 50%;
-      animation: spin 0.75s linear infinite;
+      animation: spin 0.7s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    /* Glossary Badges */
     .term-chip {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 4px 10px;
+      padding: 3px 9px;
       border-radius: 20px;
-      font-size: 0.75rem;
+      font-size: 0.74rem;
       font-weight: 600;
       background: var(--surface-variant);
       color: var(--text);
@@ -386,6 +556,7 @@
     .term-chip-location { background: #D1FAE5; color: #065F46; border-color: #A7F3D0; }
     .term-chip-character { background: #FFEDD5; color: #9A3412; border-color: #FED7AA; }
 
+    /* Toast */
     #toast {
       position: fixed;
       bottom: 74px;
@@ -401,7 +572,7 @@
       z-index: 100;
       opacity: 0;
       pointer-events: none;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: opacity 0.2s, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
     #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
@@ -504,7 +675,7 @@
         <div style="display: flex; gap: 6px; align-items: center;">
           <button class="btn btn-accent btn-sm" id="btn-translate-now" onclick="triggerAiTranslate()">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"/></svg>
-            <span>Translate</span>
+            <span id="translate-btn-text">Translate</span>
           </button>
           <button class="btn-icon" onclick="openReaderSettings()" title="Reader Appearance">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
@@ -565,29 +736,42 @@
     <!-- 5. Settings -->
     <section id="screen-settings" class="screen">
       <h2 style="font-size: 1.35rem; font-weight: 700; margin-bottom: 16px;">App Settings</h2>
+      
       <div class="card">
-        <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 14px; color: var(--primary);">Gemini AI Configuration</h3>
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+          <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--primary);">Gemini AI Literary Translation</h3>
+          <span id="api-status-badge" class="term-chip">API Key Not Set</span>
+        </div>
+        
         <div class="form-group">
           <label class="form-label" for="setting-api-key">Gemini API Key</label>
-          <input type="password" id="setting-api-key" class="form-input" placeholder="AIzaSy..." onchange="saveApiKey(this.value)">
-          <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Get your free key at <a href="https://aistudio.google.com/" target="_blank" style="color: var(--primary);">aistudio.google.com</a>. Stored locally in your browser.</p>
+          <div style="display: flex; gap: 8px;">
+            <input type="password" id="setting-api-key" class="form-input" placeholder="AIzaSy..." onchange="saveApiKey(this.value)">
+            <button class="btn btn-outline btn-sm" onclick="testApiKey()" style="white-space: nowrap;">Test Key</button>
+          </div>
+          <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Get your free key at <a href="https://aistudio.google.com/" target="_blank" style="color: var(--primary); font-weight: 600;">aistudio.google.com</a>. Stored securely in your browser's local storage.</p>
         </div>
+        
         <div class="form-group">
           <label class="form-label" for="setting-model">Translation Model</label>
           <select id="setting-model" class="form-select" onchange="saveModel(this.value)">
-            <option value="gemini-3.1-pro-preview">Gemini 3.1 Pro (Recommended: Literary & Published Quality)</option>
-            <option value="gemini-3.5-flash">Gemini 3.5 Flash (Ultra Fast & Generous Free Quota)</option>
+            <option value="gemini-2.5-pro">Gemini 2.5 Pro (Supreme Quality: Published Novel Caliber)</option>
+            <option value="gemini-2.5-flash">Gemini 2.5 Flash (Super Fast, Evocative & High Free Limit)</option>
+            <option value="gemini-1.5-pro">Gemini 1.5 Pro (Deep Context Window)</option>
+            <option value="gemini-1.5-flash">Gemini 1.5 Flash (Lightweight & Rapid)</option>
           </select>
         </div>
       </div>
+
       <div class="card">
-        <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 14px; color: var(--primary);">Full-Fidelity System Instruction</h3>
+        <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 14px; color: var(--primary);">Integral Translation Prompt (Unabridged Mandate)</h3>
         <div class="form-group">
-          <label class="form-label">Integral Rule (100% Unabridged Fidelity)</label>
+          <label class="form-label">System Instruction (100% Fidelity, Zero Omissions)</label>
           <textarea id="setting-system-prompt" class="form-textarea" rows="7" style="font-size: 0.8rem; font-family: monospace;" onchange="saveSystemPrompt(this.value)"></textarea>
           <button class="btn btn-outline btn-sm" style="margin-top: 8px;" onclick="resetSystemPrompt()">Reset to Integral Default</button>
         </div>
       </div>
+
       <div class="card">
         <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 14px;">Library Backup &amp; Storage</h3>
         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
@@ -603,7 +787,7 @@
 
   </main>
 
-  <!-- Bottom Navigation -->
+  <!-- Navigation Bar (Instant, zero lag) -->
   <nav class="app-nav">
     <button class="nav-tab active" id="tab-bookshelf" onclick="navigateTo('screen-bookshelf')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15z"/></svg>
@@ -628,13 +812,17 @@
       </div>
       <div class="modal-body">
         <div class="form-group">
-          <label class="form-label" for="import-url-input">Novel Source URL</label>
-          <input type="url" id="import-url-input" class="form-input" placeholder="https://www.69shu.com/txt/... or https://www.biquge.tv/...">
+          <label class="form-label" for="import-url-input">Novel Directory or Chapter URL</label>
+          <input type="url" id="import-url-input" class="form-input" placeholder="https://www.69shu.com/txt/... or biquge...">
+          <p style="font-size: 0.72rem; color: var(--text-muted); margin-top: 6px;">Uses multi-proxy auto-fallback with GBK/GB2312 decoding to bypass browser CORS restrictions.</p>
+        </div>
+        <div id="import-progress-status" style="display: none; font-size: 0.82rem; color: var(--primary); margin-top: 10px; align-items: center; gap: 8px;">
+          <span class="spinner"></span> <span id="import-status-text">Fetching page...</span>
         </div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-outline" onclick="closeModal('modal-import-url')">Cancel</button>
-        <button class="btn btn-primary" onclick="submitImportUrl()">Fetch &amp; Add</button>
+        <button class="btn btn-primary" id="btn-submit-import" onclick="submitImportUrl()">Fetch &amp; Add</button>
       </div>
     </div>
   </div>
@@ -660,7 +848,7 @@
         </div>
         <div class="form-group">
           <label class="form-label">Raw Chapter Text</label>
-          <textarea id="paste-chap-content" class="form-textarea" rows="8" placeholder="Paste the Chinese raw chapter text here..."></textarea>
+          <textarea id="paste-chap-content" class="form-textarea" rows="8" placeholder="Paste Chinese raw chapter text here..."></textarea>
         </div>
       </div>
       <div class="modal-footer">
@@ -735,7 +923,7 @@
         </div>
         <div class="form-group">
           <label class="form-label">Context Notes (Optional)</label>
-          <input type="text" id="term-notes" class="form-input" placeholder="e.g. Third major realm">
+          <input type="text" id="term-notes" class="form-input" placeholder="e.g. Third major cultivation realm">
         </div>
       </div>
       <div class="modal-footer">
@@ -771,6 +959,9 @@
   <div id="toast"><span id="toast-text">Message</span></div>
 
   <script>
+    /* ==========================================================================
+       1. INTEGRAL SYSTEM INSTRUCTION
+       ========================================================================== */
     const DEFAULT_SYSTEM_PROMPT = `You are a master literary translator and localization editor of Chinese web novels (Xianxia, Xuanhuan, Wuxia, Danmei, and Urban Fantasy) producing published-book caliber translations (comparable to premium editions by Seven Seas Entertainment, Wuxiaworld, and professional fantasy presses).
 
 INTEGRAL MANDATORY RULE — 100% FULL FIDELITY & ZERO OMISSIONS:
@@ -849,11 +1040,14 @@ Literary Translation Guidelines:
       { rawTerm: "御剑术", translatedTerm: "Sword Control Technique", category: "Technique", notes: "Telekinetic sword flight" }
     ];
 
+    /* State & Cache */
     let novels = [];
     let glossary = [];
     let activeNovelId = null;
     let activeChapterIndex = 1;
     let readerMode = "trans_only";
+    let bookshelfDirty = true;
+    let glossaryDirty = true;
 
     function loadState() {
       try {
@@ -861,8 +1055,12 @@ Literary Translation Guidelines:
         novels = savedNovels ? JSON.parse(savedNovels) : SAMPLE_NOVELS;
         const savedGlossary = localStorage.getItem("mizi_glossary");
         glossary = savedGlossary ? JSON.parse(savedGlossary) : DEFAULT_GLOSSARY;
-        document.getElementById("setting-api-key").value = localStorage.getItem("mizi_api_key") || "";
-        document.getElementById("setting-model").value = localStorage.getItem("mizi_model") || "gemini-3.1-pro-preview";
+        
+        const apiKey = localStorage.getItem("mizi_api_key") || "";
+        document.getElementById("setting-api-key").value = apiKey;
+        updateApiStatusBadge(apiKey);
+
+        document.getElementById("setting-model").value = localStorage.getItem("mizi_model") || "gemini-2.5-pro";
         document.getElementById("setting-system-prompt").value = localStorage.getItem("mizi_prompt") || DEFAULT_SYSTEM_PROMPT;
         setReaderTheme(localStorage.getItem("mizi_reader_theme") || "reader-theme-parchment");
         if (localStorage.getItem("mizi_dark_mode") === "true") document.documentElement.setAttribute("data-theme", "dark");
@@ -875,17 +1073,42 @@ Literary Translation Guidelines:
     function saveState() {
       localStorage.setItem("mizi_novels", JSON.stringify(novels));
       localStorage.setItem("mizi_glossary", JSON.stringify(glossary));
+      bookshelfDirty = true;
+      glossaryDirty = true;
     }
 
+    function updateApiStatusBadge(key) {
+      const badge = document.getElementById("api-status-badge");
+      if (key && key.trim().length > 10) {
+        badge.innerText = "✓ Gemini AI Ready";
+        badge.className = "term-chip term-chip-location";
+      } else {
+        badge.innerText = "API Key Not Set";
+        badge.className = "term-chip";
+      }
+    }
+
+    /* Zero-lag Navigation */
     function navigateTo(screenId) {
-      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-      document.getElementById(screenId).classList.add("active");
+      const current = document.querySelector(".screen.active");
+      const target = document.getElementById(screenId);
+      if (current === target) return;
+
+      if (current) current.classList.remove("active");
+      if (target) target.classList.add("active");
+
       document.querySelectorAll(".nav-tab").forEach(t => t.classList.remove("active"));
-      if (screenId === "screen-bookshelf") document.getElementById("tab-bookshelf")?.classList.add("active");
-      if (screenId === "screen-glossary") document.getElementById("tab-glossary")?.classList.add("active");
-      if (screenId === "screen-settings") document.getElementById("tab-settings")?.classList.add("active");
-      if (screenId === "screen-bookshelf") renderBookshelf();
-      if (screenId === "screen-glossary") renderGlossary();
+      if (screenId === "screen-bookshelf") {
+        document.getElementById("tab-bookshelf")?.classList.add("active");
+        if (bookshelfDirty) renderBookshelf();
+      }
+      if (screenId === "screen-glossary") {
+        document.getElementById("tab-glossary")?.classList.add("active");
+        if (glossaryDirty) renderGlossary();
+      }
+      if (screenId === "screen-settings") {
+        document.getElementById("tab-settings")?.classList.add("active");
+      }
     }
 
     function toggleDarkMode() {
@@ -903,9 +1126,10 @@ Literary Translation Guidelines:
       const toast = document.getElementById("toast");
       document.getElementById("toast-text").innerText = text;
       toast.classList.add("show");
-      setTimeout(() => toast.classList.remove("show"), 2600);
+      setTimeout(() => toast.classList.remove("show"), 2400);
     }
 
+    /* Bookshelf Rendering */
     function renderBookshelf() {
       const grid = document.getElementById("novel-grid");
       grid.innerHTML = "";
@@ -914,8 +1138,11 @@ Literary Translation Guidelines:
           <p style="font-size: 1.1rem; margin-bottom: 8px;">Your library is empty.</p>
           <p style="font-size: 0.85rem;">Click '+ Import URL' or '+ Paste Novel' above to add your first novel!</p>
         </div>`;
+        bookshelfDirty = false;
         return;
       }
+      
+      const fragment = document.createDocumentFragment();
       novels.forEach(novel => {
         const total = novel.chapters?.length || 0;
         const current = novel.currentChapterIndex || 1;
@@ -938,8 +1165,10 @@ Literary Translation Guidelines:
             </div>
           </div>
         `;
-        grid.appendChild(card);
+        fragment.appendChild(card);
       });
+      grid.appendChild(fragment);
+      bookshelfDirty = false;
     }
 
     function openNovelDetail(novelId) {
@@ -971,6 +1200,7 @@ Literary Translation Guidelines:
       const chapters = novel.chapters || [];
       document.getElementById("chapter-count-text").innerText = `${chapters.length} chapters`;
 
+      const fragment = document.createDocumentFragment();
       chapters.forEach(chap => {
         const item = document.createElement("div");
         item.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-bottom: 1px solid var(--border); cursor: pointer;";
@@ -982,8 +1212,9 @@ Literary Translation Guidelines:
           </div>
           <div>${chap.isTranslated ? '<span class="term-chip term-chip-location">Translated</span>' : '<span class="term-chip">Raw</span>'}</div>
         `;
-        listContainer.appendChild(item);
+        fragment.appendChild(item);
       });
+      listContainer.appendChild(fragment);
 
       navigateTo("screen-novel-detail");
     }
@@ -997,7 +1228,8 @@ Literary Translation Guidelines:
       }
     }
 
-    function startReadingNovel(novelId, chapterIndex) {
+    /* Reading Flow with Lazy Chapter Fetching */
+    async function startReadingNovel(novelId, chapterIndex) {
       activeNovelId = novelId;
       activeChapterIndex = chapterIndex;
       const novel = novels.find(n => n.id === novelId);
@@ -1015,9 +1247,31 @@ Literary Translation Guidelines:
       document.getElementById("reader-novel-title").innerText = novel.title;
       document.getElementById("reader-chap-title").innerText = chapter.translatedTitle || chapter.originalTitle;
 
-      renderReaderContent(chapter);
       navigateTo("screen-reader");
       document.getElementById("reader-scroll-area").scrollTop = 0;
+
+      // If chapter content is empty and has a sourceUrl, fetch it lazily
+      if (!chapter.originalContent && chapter.sourceUrl) {
+        renderReaderLoading("Fetching chapter content from web source...");
+        try {
+          const rawText = await fetchChapterContentFromUrl(chapter.sourceUrl);
+          chapter.originalContent = rawText;
+          saveState();
+        } catch (e) {
+          chapter.originalContent = "Could not automatically fetch chapter text from link. You may paste it directly or try again.";
+        }
+      }
+
+      renderReaderContent(chapter);
+    }
+
+    function renderReaderLoading(msg) {
+      document.getElementById("reader-article").innerHTML = `
+        <div style="text-align: center; padding: 80px 20px; color: var(--text-muted);">
+          <div class="spinner" style="width: 24px; height: 24px; margin: 0 auto 16px auto; border-width: 3px; color: var(--primary);"></div>
+          <p>${escapeHtml(msg)}</p>
+        </div>
+      `;
     }
 
     function renderReaderContent(chapter) {
@@ -1044,7 +1298,7 @@ Literary Translation Guidelines:
           bodyHtml += `
             <div class="dual-pair">
               ${raw ? `<div class="dual-raw">${escapeHtml(raw)}</div>` : ''}
-              ${trans ? `<div class="dual-trans">${escapeHtml(trans)}</div>` : `<div style="font-size:0.8rem; color:var(--text-muted); font-style:italic;">[Untranslated paragraph]</div>`}
+              ${trans ? `<div class="dual-trans">${escapeHtml(trans)}</div>` : `<div style="font-size:0.8rem; color:var(--text-muted); font-style:italic;">[Translating this paragraph...]</div>`}
             </div>
           `;
         }
@@ -1055,11 +1309,11 @@ Literary Translation Guidelines:
           });
         } else {
           bodyHtml += `<div style="text-align: center; padding: 40px 10px; color: var(--text-muted);">
-            <p style="margin-bottom: 12px;">This chapter has not been translated to English yet.</p>
-            <button class="btn btn-primary" onclick="triggerAiTranslate()">Translate Chapter with Gemini AI</button>
+            <p style="margin-bottom: 12px; font-weight: 500;">Chapter is ready in raw Chinese.</p>
+            <button class="btn btn-primary" onclick="triggerAiTranslate()">Unleash Gemini AI Literary Translation</button>
           </div>`;
           rawParas.forEach(p => {
-            bodyHtml += `<p class="reader-paragraph" style="opacity: 0.5; font-family: var(--font-chinese);">${escapeHtml(p)}</p>`;
+            bodyHtml += `<p class="reader-paragraph" style="opacity: 0.65; font-family: var(--font-chinese);">${escapeHtml(p)}</p>`;
           });
         }
       }
@@ -1079,11 +1333,12 @@ Literary Translation Guidelines:
       article.innerHTML = bodyHtml;
 
       const transBtn = document.getElementById("btn-translate-now");
+      const transText = document.getElementById("translate-btn-text");
       if (chapter.isTranslated) {
-        transBtn.innerHTML = `✓ Translated`;
+        transText.innerText = "Re-Translate";
         transBtn.className = "btn btn-outline btn-sm";
       } else {
-        transBtn.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"/></svg><span>Translate</span>`;
+        transText.innerText = "Translate";
         transBtn.className = "btn btn-accent btn-sm";
       }
     }
@@ -1116,25 +1371,234 @@ Literary Translation Guidelines:
       openModal("modal-reader-settings");
     }
 
-    /* Translation with Zero Cuts / Zero Omissions */
+    /* ==========================================================================
+       2. CORS-PROXY WEB NOVEL SCRAPER & DECODER (GBK / UTF-8 AUTO-DETECT)
+       ========================================================================== */
+    const PROXY_LIST = [
+      url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+      url => `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
+      url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
+    ];
+
+    async function fetchWithProxies(targetUrl) {
+      let lastErr = null;
+      for (const proxyFn of PROXY_LIST) {
+        const proxyUrl = proxyFn(targetUrl);
+        try {
+          const resp = await fetch(proxyUrl, { headers: { "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" } });
+          if (!resp.ok) continue;
+
+          const buffer = await resp.arrayBuffer();
+          // Check for charset in first 1500 bytes
+          const headSlice = new Uint8Array(buffer.slice(0, 1500));
+          const asciiHeader = String.fromCharCode.apply(null, Array.from(headSlice)).toLowerCase();
+          
+          let encoding = "utf-8";
+          if (asciiHeader.includes("gbk") || asciiHeader.includes("gb2312")) {
+            encoding = "gbk";
+          }
+
+          const decoder = new TextDecoder(encoding);
+          const htmlText = decoder.decode(buffer);
+          if (htmlText && htmlText.length > 200) {
+            return { html: htmlText, finalUrl: targetUrl };
+          }
+        } catch (e) {
+          lastErr = e;
+        }
+      }
+      throw lastErr || new Error("All proxy attempts failed");
+    }
+
+    function openImportModal() {
+      document.getElementById("import-url-input").value = "";
+      document.getElementById("import-progress-status").style.display = "none";
+      document.getElementById("btn-submit-import").disabled = false;
+      openModal("modal-import-url");
+    }
+
+    async function submitImportUrl() {
+      const url = document.getElementById("import-url-input").value.trim();
+      if (!url) {
+        alert("Please enter a novel URL");
+        return;
+      }
+
+      const statusEl = document.getElementById("import-progress-status");
+      const statusText = document.getElementById("import-status-text");
+      const submitBtn = document.getElementById("btn-submit-import");
+
+      statusEl.style.display = "inline-flex";
+      statusText.innerText = "Connecting through CORS proxy...";
+      submitBtn.disabled = true;
+
+      try {
+        const { html } = await fetchWithProxies(url);
+        statusText.innerText = "Parsing novel metadata & chapters...";
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, "text/html");
+
+        let title = doc.querySelector("meta[property='og:novel:book_name'], meta[property='og:title']")?.getAttribute("content")
+          || doc.querySelector("h1, .booktitle, .title")?.textContent?.trim()
+          || doc.title.split(/[-_]/)[0].trim() || "Imported Novel";
+
+        let author = doc.querySelector("meta[property='og:novel:author']")?.getAttribute("content")
+          || doc.querySelector(".author, span:contains('作者')")?.textContent?.replace(/作者[:：]/g, "")?.trim() || "Unknown";
+
+        let desc = doc.querySelector("meta[property='og:description'], .intro")?.getAttribute("content")
+          || doc.querySelector(".intro, #intro, .description")?.textContent?.trim() || "";
+
+        let cover = doc.querySelector("meta[property='og:image']")?.getAttribute("content")
+          || doc.querySelector(".cover img, #fmimg img")?.getAttribute("src") || "";
+        if (cover && !cover.startsWith("http")) {
+          try { cover = new URL(cover, url).href; } catch(e){}
+        }
+
+        // Find chapter anchor links
+        const baseUrl = new URL(url);
+        const links = Array.from(doc.querySelectorAll("a[href]")).filter(a => {
+          const t = a.textContent.trim();
+          return t.includes("第") || t.includes("章") || /^\d+/.test(t);
+        });
+
+        const chapters = [];
+        let idx = 1;
+        const seenUrls = new Set();
+
+        for (const a of links) {
+          let href = a.getAttribute("href");
+          if (!href) continue;
+          try { href = new URL(href, baseUrl).href; } catch(e){}
+          const cTitle = a.textContent.trim();
+
+          if (href && !seenUrls.has(href) && cTitle.length < 80) {
+            seenUrls.add(href);
+            chapters.push({
+              index: idx++,
+              originalTitle: cTitle,
+              translatedTitle: "",
+              originalContent: "",
+              translatedContent: "",
+              sourceUrl: href,
+              isTranslated: false
+            });
+            if (chapters.length >= 200) break; // First 200 chapters
+          }
+        }
+
+        const newNovel = {
+          id: "novel_" + Date.now(),
+          title: title,
+          originalTitle: title,
+          author: author,
+          description: desc,
+          coverUrl: cover,
+          currentChapterIndex: 1,
+          chapters: chapters.length > 0 ? chapters : [
+            { index: 1, originalTitle: "第一章", translatedTitle: "", originalContent: "", translatedContent: "", sourceUrl: url, isTranslated: false }
+          ]
+        };
+
+        novels.unshift(newNovel);
+        saveState();
+        closeModal("modal-import-url");
+        renderBookshelf();
+        showToast(`Imported: ${title} (${chapters.length} chapters)`);
+      } catch (err) {
+        console.warn("Proxy import failed, offering paste fallback:", err);
+        statusEl.style.display = "none";
+        submitBtn.disabled = false;
+        alert("The host web page blocked automated proxy requests. You can paste the chapter text directly via '+ Paste Novel'!");
+        closeModal("modal-import-url");
+        openPasteModal();
+      }
+    }
+
+    async function fetchChapterContentFromUrl(url) {
+      const { html } = await fetchWithProxies(url);
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, "text/html");
+
+      const contentEl = doc.querySelector("#content, .content, .read-content, #htmlContent, #chaptercontent, article");
+      if (contentEl) {
+        contentEl.querySelectorAll("script, style, ins, ads, .ads, a").forEach(el => el.remove());
+        return contentEl.innerHTML
+          .replace(/<br\s*[\/]?>/gi, "\n")
+          .replace(/<\/p>/gi, "\n")
+          .replace(/<p>/gi, "")
+          .replace(/&nbsp;/g, " ")
+          .split("\n")
+          .map(l => l.trim())
+          .filter(l => l.length > 0)
+          .join("\n\n");
+      }
+      return doc.body.textContent;
+    }
+
+    function openPasteModal() {
+      document.getElementById("paste-novel-title").value = "";
+      document.getElementById("paste-novel-author").value = "";
+      document.getElementById("paste-chap-title").value = "第一章";
+      document.getElementById("paste-chap-content").value = "";
+      openModal("modal-paste-novel");
+    }
+
+    function submitPasteNovel() {
+      const title = document.getElementById("paste-novel-title").value.trim() || "Untitled Novel";
+      const author = document.getElementById("paste-novel-author").value.trim() || "Unknown";
+      const chapTitle = document.getElementById("paste-chap-title").value.trim() || "Chapter 1";
+      const content = document.getElementById("paste-chap-content").value.trim();
+
+      if (!content) {
+        alert("Please paste the chapter text");
+        return;
+      }
+
+      const newNovel = {
+        id: "novel_" + Date.now(),
+        title: title,
+        originalTitle: title,
+        author: author,
+        description: "Manually imported novel.",
+        currentChapterIndex: 1,
+        chapters: [{ index: 1, originalTitle: chapTitle, translatedTitle: "", originalContent: content, translatedContent: "", isTranslated: false }]
+      };
+
+      novels.unshift(newNovel);
+      saveState();
+      closeModal("modal-paste-novel");
+      renderBookshelf();
+      showToast(`Added: ${title}`);
+    }
+
+    /* ==========================================================================
+       3. GEMINI AI LITERARY TRANSLATION (ZERO OMISSIONS & CHUNKING)
+       ========================================================================== */
     async function triggerAiTranslate() {
       const novel = novels.find(n => n.id === activeNovelId);
       const chapter = (novel?.chapters || []).find(c => c.index === activeChapterIndex);
       if (!novel || !chapter) return;
 
+      if (!chapter.originalContent) {
+        alert("No raw Chinese chapter content found to translate!");
+        return;
+      }
+
       const apiKey = localStorage.getItem("mizi_api_key") || "";
-      if (!apiKey) {
-        alert("Please set your Gemini API Key in Settings first to enable literary translation! (Get your free key at aistudio.google.com)");
+      if (!apiKey || apiKey.trim().length < 8) {
+        alert("Please configure your Gemini API Key in Settings first to enable high-quality literary translation!");
         navigateTo("screen-settings");
         return;
       }
 
       const transBtn = document.getElementById("btn-translate-now");
-      transBtn.innerHTML = `<span class="spinner"></span> Translating...`;
+      const transText = document.getElementById("translate-btn-text");
       transBtn.disabled = true;
+      transText.innerHTML = `<span class="spinner"></span> Translating...`;
 
       try {
-        const model = localStorage.getItem("mizi_model") || "gemini-3.1-pro-preview";
+        const model = localStorage.getItem("mizi_model") || "gemini-2.5-pro";
         const systemPrompt = localStorage.getItem("mizi_prompt") || DEFAULT_SYSTEM_PROMPT;
 
         const result = await callGeminiTranslation(chapter.originalTitle, chapter.originalContent, glossary, systemPrompt, apiKey, model);
@@ -1144,14 +1608,14 @@ Literary Translation Guidelines:
         chapter.isTranslated = true;
         saveState();
 
-        showToast("Chapter translated completely with full fidelity!");
+        showToast("✓ Chapter translated with 100% full fidelity!");
         renderReaderContent(chapter);
       } catch (err) {
         console.error("Translation error:", err);
-        alert("Translation error: " + (err.message || "Failed to communicate with Gemini API"));
+        alert("Gemini Translation Error: " + (err.message || "Failed to communicate with API"));
       } finally {
         transBtn.disabled = false;
-        transBtn.innerHTML = `✓ Translated`;
+        transText.innerText = "Re-Translate";
       }
     }
 
@@ -1168,6 +1632,7 @@ Literary Translation Guidelines:
       const fullInstruction = systemPrompt + glossaryPrompt;
       const cleanRaw = cleanRawText(rawContent);
 
+      // Multi-chunk if longer than 3500 characters to prevent truncation
       if (cleanRaw.length <= 3500) {
         return await translateSingleChunk(rawTitle, cleanRaw, fullInstruction, apiKey, model);
       } else {
@@ -1211,7 +1676,11 @@ CONTENT:
       const body = {
         contents: [{ parts: [{ text: userPrompt }] }],
         systemInstruction: { parts: [{ text: fullInstruction }] },
-        generationConfig: { temperature: 0.35, topP: 0.95, maxOutputTokens: 8192 }
+        generationConfig: {
+          temperature: 0.38,
+          topP: 0.95,
+          maxOutputTokens: 8192
+        }
       };
 
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
@@ -1286,122 +1755,37 @@ CONTENT:
       return chunks.length > 0 ? chunks : [content];
     }
 
-    /* Web Scraping & Manual Add */
-    function openImportModal() {
-      document.getElementById("import-url-input").value = "";
-      openModal("modal-import-url");
-    }
-
-    async function submitImportUrl() {
-      const url = document.getElementById("import-url-input").value.trim();
-      if (!url) return;
-      closeModal("modal-import-url");
-      showToast("Fetching novel via web proxy...");
-
-      try {
-        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-        const res = await fetch(proxyUrl);
-        if (!res.ok) throw new Error("Could not fetch page");
-        const html = await res.text();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, "text/html");
-
-        let title = doc.querySelector("meta[property='og:novel:book_name'], meta[property='og:title']")?.getAttribute("content")
-          || doc.querySelector("h1, .booktitle")?.textContent?.trim()
-          || doc.title.split(/[-_]/)[0].trim() || "Imported Novel";
-
-        let author = doc.querySelector("meta[property='og:novel:author']")?.getAttribute("content")
-          || doc.querySelector(".author, span:contains('作者')")?.textContent?.replace("作者：", "")?.trim() || "Unknown";
-
-        let desc = doc.querySelector("meta[property='og:description'], .intro")?.getAttribute("content")
-          || doc.querySelector(".intro, #intro")?.textContent?.trim() || "";
-
-        const links = Array.from(doc.querySelectorAll("a[href]")).filter(a => {
-          const t = a.textContent.trim();
-          return t.includes("第") || t.includes("章") || /\d+/.test(t);
-        });
-
-        const chapters = [];
-        let idx = 1;
-        const seenHrefs = new Set();
-
-        for (const a of links) {
-          const href = a.getAttribute("href");
-          const cTitle = a.textContent.trim();
-          if (href && !seenHrefs.has(href) && cTitle.length < 80) {
-            seenHrefs.add(href);
-            chapters.push({
-              index: idx++,
-              originalTitle: cTitle,
-              translatedTitle: "",
-              originalContent: "Click 'Translate' or view raw chapter content.",
-              translatedContent: "",
-              isTranslated: false
-            });
-            if (chapters.length >= 100) break;
-          }
-        }
-
-        const newNovel = {
-          id: "novel_" + Date.now(),
-          title: title,
-          originalTitle: title,
-          author: author,
-          description: desc,
-          coverUrl: "",
-          currentChapterIndex: 1,
-          chapters: chapters.length > 0 ? chapters : [
-            { index: 1, originalTitle: "第一章", translatedTitle: "", originalContent: "Sample chapter content", translatedContent: "", isTranslated: false }
-          ]
-        };
-
-        novels.unshift(newNovel);
-        saveState();
-        renderBookshelf();
-        showToast(`Imported: ${title} (${chapters.length} chapters)`);
-      } catch (err) {
-        alert("Direct web scraping was restricted by the host server. Opening the Manual Paste modal so you can paste the text directly!");
-        openPasteModal();
-      }
-    }
-
-    function openPasteModal() {
-      document.getElementById("paste-novel-title").value = "";
-      document.getElementById("paste-novel-author").value = "";
-      document.getElementById("paste-chap-title").value = "第一章";
-      document.getElementById("paste-chap-content").value = "";
-      openModal("modal-paste-novel");
-    }
-
-    function submitPasteNovel() {
-      const title = document.getElementById("paste-novel-title").value.trim() || "Untitled Novel";
-      const author = document.getElementById("paste-novel-author").value.trim() || "Unknown";
-      const chapTitle = document.getElementById("paste-chap-title").value.trim() || "Chapter 1";
-      const content = document.getElementById("paste-chap-content").value.trim();
-
-      if (!content) {
-        alert("Please paste the chapter text");
+    /* Fast API Key Verification */
+    async function testApiKey() {
+      const key = document.getElementById("setting-api-key").value.trim();
+      if (!key) {
+        alert("Please enter an API Key first");
         return;
       }
 
-      const newNovel = {
-        id: "novel_" + Date.now(),
-        title: title,
-        originalTitle: title,
-        author: author,
-        description: "Manually imported novel.",
-        currentChapterIndex: 1,
-        chapters: [{ index: 1, originalTitle: chapTitle, translatedTitle: "", originalContent: content, translatedContent: "", isTranslated: false }]
-      };
+      showToast("Testing API Key with Gemini...");
+      try {
+        const model = document.getElementById("setting-model").value;
+        const testPrompt = {
+          contents: [{ parts: [{ text: "Translate in one word: 修仙" }] }]
+        };
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(testPrompt)
+        });
 
-      novels.unshift(newNovel);
-      saveState();
-      closeModal("modal-paste-novel");
-      renderBookshelf();
-      showToast(`Added: ${title}`);
+        if (!res.ok) throw new Error(await res.text());
+        showToast("✓ Gemini API Key Verified & Connected!");
+        saveApiKey(key);
+      } catch (e) {
+        alert("API Key test failed: " + e.message);
+      }
     }
 
-    /* Glossary Operations */
+    /* ==========================================================================
+       4. GLOSSARY OPERATIONS
+       ========================================================================== */
     function renderGlossary() {
       const tbody = document.getElementById("glossary-table-body");
       tbody.innerHTML = "";
@@ -1416,9 +1800,11 @@ CONTENT:
 
       if (filtered.length === 0) {
         tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 24px;">No matching glossary terms found.</td></tr>`;
+        glossaryDirty = false;
         return;
       }
 
+      const fragment = document.createDocumentFragment();
       filtered.forEach(term => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
@@ -1428,8 +1814,10 @@ CONTENT:
           <td style="font-size: 0.78rem; color: var(--text-muted);">${escapeHtml(term.notes || '—')}</td>
           <td style="text-align: right;"><button class="btn btn-outline btn-sm btn-danger" onclick="deleteGlossaryTerm('${escapeHtml(term.rawTerm)}')">Delete</button></td>
         `;
-        tbody.appendChild(tr);
+        fragment.appendChild(tr);
       });
+      tbody.appendChild(fragment);
+      glossaryDirty = false;
     }
 
     function getCategoryChipClass(cat) {
@@ -1548,9 +1936,22 @@ CONTENT:
     }
 
     /* Settings & Backup */
-    function saveApiKey(val) { localStorage.setItem("mizi_api_key", val.trim()); showToast("API key saved"); }
-    function saveModel(val) { localStorage.setItem("mizi_model", val); showToast("Model saved"); }
-    function saveSystemPrompt(val) { localStorage.setItem("mizi_prompt", val); showToast("Prompt saved"); }
+    function saveApiKey(val) {
+      localStorage.setItem("mizi_api_key", val.trim());
+      updateApiStatusBadge(val.trim());
+      showToast("API key saved");
+    }
+
+    function saveModel(val) {
+      localStorage.setItem("mizi_model", val);
+      showToast("Model preference saved");
+    }
+
+    function saveSystemPrompt(val) {
+      localStorage.setItem("mizi_prompt", val);
+      showToast("System prompt updated");
+    }
+
     function resetSystemPrompt() {
       document.getElementById("setting-system-prompt").value = DEFAULT_SYSTEM_PROMPT;
       localStorage.setItem("mizi_prompt", DEFAULT_SYSTEM_PROMPT);
