@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Mizi - AI Chinese Novel Library & Translator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #059669;
+      --primary-dark: #047857;
+      --primary-light: #A7F3D0;
+      --primary-container: #D1FAE5;
+      --on-primary: #FFFFFF;
+      --accent: #F59E0B;
+      --accent-light: #FDE68A;
+      --bg: #F8FAFC;
+      --surface: #FFFFFF;
+      --surface-variant: #F1F5F9;
+      --border: #E2E8F0;
+      --text: #0F172A;
+      --text-muted: #64748B;
+      --danger: #EF4444;
+      --success: #10B981;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --radius-lg: 18px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.08);
+      --font-ui: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-reader: 'Lora', serif;
+      --font-chinese: 'Noto Serif SC', serif;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0B1315;
+      --surface: #121F21;
+      --surface-variant: #1A2C2F;
+      --border: #223B3E;
+      --text: #F1F5F9;
+      --text-muted: #94A3B8;
+      --primary: #10B981;
+      --primary-dark: #059669;
+      --primary-light: #34D399;
+      --primary-container: #13392F;
+      --on-primary: #FFFFFF;
+      --accent: #FBBF24;
+      --accent-light: #78350F;
+    }
+
+    /* Reader Color Themes */
+    .reader-theme-parchment { --reader-bg: #FBF0D9; --reader-text: #2C2416; --reader-border: #EADBBA; }
+    .reader-theme-jade { --reader-bg: #EAF4EE; --reader-text: #132E22; --reader-border: #C8E3D2; }
+    .reader-theme-dark { --reader-bg: #111827; --reader-text: #E5E7EB; --reader-border: #374151; }
+    .reader-theme-light { --reader-bg: #FFFFFF; --reader-text: #1E293B; --reader-border: #E2E8F0; }
+    .reader-theme-sepia { --reader-bg: #F4ECD8; --reader-text: #423629; --reader-border: #DFD4BE; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: var(--font-ui);
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+    }
+
+    /* App Header */
+    header.app-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 40;
+      flex-shrink: 0;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; }
+    .brand-logo { width: 38px; height: 38px; flex-shrink: 0; filter: drop-shadow(0 2px 4px rgba(5, 150, 105, 0.25)); }
+    .brand-title { font-weight: 700; font-size: 1.25rem; letter-spacing: -0.02em; color: var(--text); line-height: 1.1; }
+    .brand-subtitle { font-size: 0.68rem; color: var(--text-muted); font-weight: 500; display: block; }
+    .header-actions { display: flex; align-items: center; gap: 8px; }
+
+    .btn-icon {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text);
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-icon:hover { background: var(--surface-variant); border-color: var(--border); }
+
+    /* Main Container & Screens */
+    main.app-main { flex: 1; overflow-y: auto; position: relative; background: var(--bg); }
+    .screen { display: none; padding: 16px; max-width: 900px; margin: 0 auto; animation: fadeIn 0.2s ease-out; }
+    .screen.active { display: block; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Navigation Bar */
+    nav.app-nav {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      padding: 6px 12px;
+      z-index: 40;
+      flex-shrink: 0;
+    }
+    .nav-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      padding: 6px 14px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 0.72rem;
+      font-weight: 600;
+      transition: all 0.15s ease;
+      min-width: 60px;
+    }
+    .nav-tab svg { width: 22px; height: 22px; transition: transform 0.15s; }
+    .nav-tab.active { color: var(--primary); }
+    .nav-tab.active svg { transform: translateY(-2px); }
+
+    /* Buttons & Form Controls */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 9px 16px;
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+    .btn-primary { background: var(--primary); color: var(--on-primary); }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-outline { background: transparent; border-color: var(--border); color: var(--text); }
+    .btn-outline:hover { background: var(--surface-variant); }
+    .btn-accent { background: var(--accent); color: #78350F; }
+    .btn-accent:hover { background: #D97706; color: #FFFFFF; }
+    .btn-sm { padding: 5px 10px; font-size: 0.75rem; border-radius: var(--radius-sm); }
+    .btn-danger { background: #FEE2E2; color: #991B1B; }
+    .btn-danger:hover { background: #EF4444; color: #FFFFFF; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.9rem;
+      transition: border-color 0.15s;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+    }
+
+    /* Cards & Grids */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 16px;
+    }
+    .bookshelf-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .bookshelf-title { font-size: 1.35rem; font-weight: 700; }
+    .novel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
+    @media (min-width: 640px) {
+      .novel-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+    }
+    .novel-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .novel-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .novel-cover {
+      height: 180px;
+      background: linear-gradient(135deg, #064E3B 0%, #0F3A2E 50%, #042F2E 100%);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 12px;
+      color: #FFFFFF;
+      overflow: hidden;
+    }
+    .novel-cover img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.85; }
+    .novel-cover-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      color: #FBBF24;
+      padding: 3px 7px;
+      border-radius: 6px;
+      font-size: 0.68rem;
+      font-weight: 700;
+    }
+    .novel-cover-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      line-height: 1.2;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+      position: relative;
+      z-index: 2;
+    }
+    .novel-cover-raw {
+      font-family: var(--font-chinese);
+      font-size: 0.75rem;
+      color: #E2E8F0;
+      position: relative;
+      z-index: 2;
+      margin-top: 2px;
+    }
+    .novel-info { padding: 10px 12px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+    .novel-author { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 6px; }
+    .progress-bar { height: 4px; background: var(--surface-variant); border-radius: 2px; overflow: hidden; margin-top: 6px; }
+    .progress-fill { height: 100%; background: var(--primary); }
+    .novel-stats { font-size: 0.7rem; color: var(--text-muted); display: flex; justify-content: space-between; margin-top: 4px; }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      z-index: 60;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes modalPop {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .modal-title { font-weight: 700; font-size: 1.1rem; }
+    .modal-body { padding: 20px; }
+    .modal-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
+
+    /* Reader View */
+    #screen-reader { max-width: 100%; padding: 0; height: 100%; display: none; flex-direction: column; }
+    #screen-reader.active { display: flex; }
+    .reader-toolbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      gap: 8px;
+    }
+    .reader-title-box { flex: 1; min-width: 0; }
+    .reader-chap-title { font-size: 0.95rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .reader-novel-title { font-size: 0.72rem; color: var(--text-muted); }
+    .reader-content-wrap {
+      flex: 1;
+      overflow-y: auto;
+      background: var(--reader-bg, #FBF0D9);
+      color: var(--reader-text, #2C2416);
+      transition: background-color 0.2s, color 0.2s;
+    }
+    .reader-article { max-width: 760px; margin: 0 auto; padding: 32px 24px 80px 24px; font-family: var(--font-reader); }
+    .reader-article h1 { font-family: 'Cinzel', serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 8px; line-height: 1.3; text-align: center; }
+    .reader-article .raw-title-sub {
+      text-align: center;
+      font-family: var(--font-chinese);
+      font-size: 0.95rem;
+      opacity: 0.75;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+    .reader-paragraph { margin-bottom: 18px; line-height: 1.8; font-size: var(--font-size, 18px); text-align: justify; }
+    .dual-pair {
+      margin-bottom: 24px;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      border-left: 3px solid var(--primary);
+      background: rgba(0,0,0,0.02);
+    }
+    .dual-raw { font-family: var(--font-chinese); font-size: calc(var(--font-size, 18px) - 2px); line-height: 1.6; opacity: 0.8; margin-bottom: 8px; }
+    .dual-trans { font-family: var(--font-reader); font-size: var(--font-size, 18px); line-height: 1.8; }
+    .reader-footer-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px dashed rgba(0,0,0,0.15);
+    }
+
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid currentColor;
+      border-right-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .term-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: var(--surface-variant);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .term-chip-cultivation { background: #FEF3C7; color: #92400E; border-color: #FDE68A; }
+    .term-chip-technique { background: #EDE9FE; color: #5B21B6; border-color: #DDD6FE; }
+    .term-chip-item { background: #E0E7FF; color: #3730A3; border-color: #C7D2FE; }
+    .term-chip-faction { background: #FCE7F3; color: #9D174D; border-color: #FBCFE8; }
+    .term-chip-location { background: #D1FAE5; color: #065F46; border-color: #A7F3D0; }
+    .term-chip-character { background: #FFEDD5; color: #9A3412; border-color: #FED7AA; }
+
+    #toast {
+      position: fixed;
+      bottom: 74px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1E293B;
+      color: #F8FAFC;
+      padding: 10px 18px;
+      border-radius: 24px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .glossary-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    .glossary-table th {
+      text-align: left;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 8px 12px;
+      border-bottom: 2px solid var(--border);
+    }
+    .glossary-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 0.88rem; }
+  </style>
+</head>
+<body class="reader-theme-parchment">
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="brand" onclick="navigateTo('screen-bookshelf')">
+      <!-- Cutey Pastel Green Leaf Mascot SVG -->
+      <svg class="brand-logo" viewBox="0 0 108 108" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="54" cy="54" r="50" fill="#0F3A2E"/>
+        <circle cx="54" cy="54" r="42" fill="#FBBF24" fill-opacity="0.15"/>
+        <circle cx="54" cy="54" r="46" stroke="#FBBF24" stroke-opacity="0.25" stroke-width="1.2"/>
+        <path d="M 54,20 C 72,21 86,37 84,60 C 82,76 69,87 54,88 C 39,87 26,76 24,60 C 22,37 36,21 54,20 Z" fill="#FBBF24" fill-opacity="0.25"/>
+        <path d="M 53,27 C 53,20 56,15 62,14 C 62.8,14 62,16 60,18 C 57,21 55,24 55,27 Z" fill="#059669"/>
+        <path d="M 59,17 C 63,14.5 66.5,15.5 67,18.5 C 64.5,19.5 61,19 59,17 Z" fill="#34D399"/>
+        <path d="M 54,25 C 68,26 80,42 78,59 C 76,72 66,81 54,82 C 42,81 32,72 30,59 C 28,42 40,26 54,25 Z" fill="#A7F3D0"/>
+        <path d="M 54,25 C 68,26 80,42 78,59 C 76,72 66,81 54,82 C 60,78 68,70 69,59 C 70,45 61,31 54,25 Z" fill="#6EE7B7"/>
+        <path d="M 54,25 C 47,32 39,43 40,56 C 40.5,63 43,69 47,73 C 37,69 31,60 30,52 C 29,42 40,28 54,25 Z" fill="#D1FAE5"/>
+        <ellipse cx="34.5" cy="59" rx="5.5" ry="3.5" fill="#F59E0B"/>
+        <ellipse cx="73.5" cy="59" rx="5.5" ry="3.5" fill="#F59E0B"/>
+        <ellipse cx="44" cy="52" rx="6" ry="6" fill="#1E293B"/>
+        <circle cx="42.5" cy="49.5" r="2.2" fill="#FFFFFF"/>
+        <circle cx="46" cy="54.5" r="1" fill="#FFFFFF"/>
+        <ellipse cx="64" cy="52" rx="6" ry="6" fill="#1E293B"/>
+        <circle cx="62.5" cy="49.5" r="2.2" fill="#FFFFFF"/>
+        <circle cx="66" cy="54.5" r="1" fill="#FFFFFF"/>
+        <path d="M 50.5,58.5 C 51.5,63.5 56.5,63.5 57.5,58.5" stroke="#1E293B" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M 51.8,60 C 52.6,62.8 55.4,62.8 56.2,60 Z" fill="#FB7185"/>
+        <polygon points="77,32 78.5,35 81.5,36 78.5,37 77,40 75.5,37 72.5,36 75.5,35" fill="#FBBF24"/>
+        <polygon points="27,40 28,42 30,43 28,44 27,46 26,44 24,43 26,42" fill="#FCD34D"/>
+      </svg>
+      <div>
+        <div class="brand-title">Mizi</div>
+        <span class="brand-subtitle">AI Chinese Novel Library &amp; Translator</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-icon" id="btn-theme-toggle" title="Toggle Dark/Light Mode" onclick="toggleDarkMode()">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Screens -->
+  <main class="app-main">
+
+    <!-- 1. Bookshelf -->
+    <section id="screen-bookshelf" class="screen active">
+      <div class="bookshelf-header">
+        <div>
+          <h2 class="bookshelf-title">Novel Bookshelf</h2>
+          <p style="font-size: 0.8rem; color: var(--text-muted)">Import raw Chinese web novels via URL or paste</p>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn btn-outline btn-sm" onclick="openPasteModal()">+ Paste Novel</button>
+          <button class="btn btn-primary btn-sm" onclick="openImportModal()">+ Import URL</button>
+        </div>
+      </div>
+      <div class="novel-grid" id="novel-grid"></div>
+    </section>
+
+    <!-- 2. Novel Detail -->
+    <section id="screen-novel-detail" class="screen">
+      <div style="margin-bottom: 16px;">
+        <button class="btn btn-outline btn-sm" onclick="navigateTo('screen-bookshelf')">← Back to Bookshelf</button>
+      </div>
+      <div class="card" id="novel-detail-card" style="display: flex; gap: 20px; flex-wrap: wrap;"></div>
+      <div class="card">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+          <h3 style="font-size: 1.1rem; font-weight: 700;">Chapter Directory</h3>
+          <span style="font-size: 0.8rem; color: var(--text-muted)" id="chapter-count-text">0 chapters</span>
+        </div>
+        <div id="chapter-list-container" style="max-height: 480px; overflow-y: auto;"></div>
+      </div>
+    </section>
+
+    <!-- 3. Reader Screen -->
+    <section id="screen-reader">
+      <div class="reader-toolbar">
+        <button class="btn-icon" onclick="backFromReader()" title="Back to Novel">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </button>
+        <div class="reader-title-box">
+          <div class="reader-chap-title" id="reader-chap-title">Chapter Title</div>
+          <div class="reader-novel-title" id="reader-novel-title">Novel Name</div>
+        </div>
+        <div style="display: flex; gap: 6px; align-items: center;">
+          <button class="btn btn-accent btn-sm" id="btn-translate-now" onclick="triggerAiTranslate()">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"/></svg>
+            <span>Translate</span>
+          </button>
+          <button class="btn-icon" onclick="openReaderSettings()" title="Reader Appearance">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="reader-content-wrap" id="reader-scroll-area">
+        <article class="reader-article" id="reader-article"></article>
+      </div>
+    </section>
+
+    <!-- 4. Glossary -->
+    <section id="screen-glossary" class="screen">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+        <div>
+          <h2 style="font-size: 1.35rem; font-weight: 700;">Cultivation Glossary</h2>
+          <p style="font-size: 0.8rem; color: var(--text-muted)">Terms enforced strictly during Gemini AI translation</p>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn btn-outline btn-sm" onclick="exportGlossaryToClipboard()">Export</button>
+          <button class="btn btn-outline btn-sm" onclick="openGlossaryImportModal()">+ Import File</button>
+          <button class="btn btn-primary btn-sm" onclick="openAddTermModal()">+ Add Term</button>
+        </div>
+      </div>
+
+      <div class="card" style="padding: 12px;">
+        <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+          <input type="text" id="glossary-search" class="form-input" placeholder="Search Chinese term or English translation..." oninput="renderGlossary()">
+          <select id="glossary-category-filter" class="form-select" style="max-width: 180px;" onchange="renderGlossary()">
+            <option value="ALL">All Categories</option>
+            <option value="Cultivation Realm">Realms</option>
+            <option value="Technique">Techniques</option>
+            <option value="Item">Items & Pills</option>
+            <option value="Character">Characters</option>
+            <option value="Faction">Sects & Factions</option>
+            <option value="Location">Locations</option>
+            <option value="General">General</option>
+          </select>
+        </div>
+        <div style="overflow-x: auto;">
+          <table class="glossary-table">
+            <thead>
+              <tr>
+                <th>Raw Chinese</th>
+                <th>English Translation</th>
+                <th>Category</th>
+                <th>Notes</th>
+                <th style="text-align: right;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="glossary-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Settings -->
+    <section id="screen-settings" class="screen">
+      <h2 style="font-size: 1.35rem; font-weight: 700; margin-bottom: 16px;">App Settings</h2>
+      <div class="card">
+        <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 14px; color: var(--primary);">Gemini AI Configuration</h3>
+        <div class="form-group">
+          <label class="form-label" for="setting-api-key">Gemini API Key</label>
+          <input type="password" id="setting-api-key" class="form-input" placeholder="AIzaSy..." onchange="saveApiKey(this.value)">
+          <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Get your free key at <a href="https://aistudio.google.com/" target="_blank" style="color: var(--primary);">aistudio.google.com</a>. Stored locally in your browser.</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="setting-model">Translation Model</label>
+          <select id="setting-model" class="form-select" onchange="saveModel(this.value)">
+            <option value="gemini-3.1-pro-preview">Gemini 3.1 Pro (Recommended: Literary & Published Quality)</option>
+            <option value="gemini-3.5-flash">Gemini 3.5 Flash (Ultra Fast & Generous Free Quota)</option>
+          </select>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 14px; color: var(--primary);">Full-Fidelity System Instruction</h3>
+        <div class="form-group">
+          <label class="form-label">Integral Rule (100% Unabridged Fidelity)</label>
+          <textarea id="setting-system-prompt" class="form-textarea" rows="7" style="font-size: 0.8rem; font-family: monospace;" onchange="saveSystemPrompt(this.value)"></textarea>
+          <button class="btn btn-outline btn-sm" style="margin-top: 8px;" onclick="resetSystemPrompt()">Reset to Integral Default</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 14px;">Library Backup &amp; Storage</h3>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn btn-outline btn-sm" onclick="exportFullBackup()">Export All Library JSON</button>
+          <label class="btn btn-outline btn-sm" style="margin: 0; cursor: pointer;">
+            Import Backup JSON
+            <input type="file" accept=".json" style="display: none;" onchange="importFullBackup(event)">
+          </label>
+          <button class="btn btn-danger btn-sm" onclick="clearAllData()">Reset Everything</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="app-nav">
+    <button class="nav-tab active" id="tab-bookshelf" onclick="navigateTo('screen-bookshelf')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15z"/></svg>
+      <span>Bookshelf</span>
+    </button>
+    <button class="nav-tab" id="tab-glossary" onclick="navigateTo('screen-glossary')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <span>Glossary</span>
+    </button>
+    <button class="nav-tab" id="tab-settings" onclick="navigateTo('screen-settings')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span>Settings</span>
+    </button>
+  </nav>
+
+  <!-- Modals -->
+  <div class="modal-overlay" id="modal-import-url">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Import Novel via Web Link</h3>
+        <button class="btn-icon" onclick="closeModal('modal-import-url')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="import-url-input">Novel Source URL</label>
+          <input type="url" id="import-url-input" class="form-input" placeholder="https://www.69shu.com/txt/... or https://www.biquge.tv/...">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('modal-import-url')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitImportUrl()">Fetch &amp; Add</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-paste-novel">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Manual Novel / Chapter Paste</h3>
+        <button class="btn-icon" onclick="closeModal('modal-paste-novel')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Novel Title</label>
+          <input type="text" id="paste-novel-title" class="form-input" placeholder="e.g. 凡人修仙传 / A Mortal's Journey">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Author (Optional)</label>
+          <input type="text" id="paste-novel-author" class="form-input" placeholder="e.g. 忘语 (Wang Yu)">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Chapter Title</label>
+          <input type="text" id="paste-chap-title" class="form-input" placeholder="e.g. 第一章 山边小村">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Raw Chapter Text</label>
+          <textarea id="paste-chap-content" class="form-textarea" rows="8" placeholder="Paste the Chinese raw chapter text here..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('modal-paste-novel')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitPasteNovel()">Save to Library</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-reader-settings">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Reader Appearance</h3>
+        <button class="btn-icon" onclick="closeModal('modal-reader-settings')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Reading Mode</label>
+          <select id="reader-mode-select" class="form-select" onchange="updateReaderMode(this.value)">
+            <option value="trans_only">English Translation Only</option>
+            <option value="dual_view">Dual Paragraph (Side-by-Side)</option>
+            <option value="raw_only">Raw Chinese Only</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Theme Background</label>
+          <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px;">
+            <button class="btn btn-sm" style="background: #FBF0D9; color: #2C2416; border: 1px solid #EADBBA;" onclick="setReaderTheme('reader-theme-parchment')">Parchment</button>
+            <button class="btn btn-sm" style="background: #EAF4EE; color: #132E22; border: 1px solid #C8E3D2;" onclick="setReaderTheme('reader-theme-jade')">Jade</button>
+            <button class="btn btn-sm" style="background: #111827; color: #E5E7EB; border: 1px solid #374151;" onclick="setReaderTheme('reader-theme-dark')">Dark</button>
+            <button class="btn btn-sm" style="background: #FFFFFF; color: #1E293B; border: 1px solid #E2E8F0;" onclick="setReaderTheme('reader-theme-light')">Light</button>
+            <button class="btn btn-sm" style="background: #F4ECD8; color: #423629; border: 1px solid #DFD4BE;" onclick="setReaderTheme('reader-theme-sepia')">Sepia</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Font Size (<span id="font-size-label">18px</span>)</label>
+          <input type="range" min="14" max="28" value="18" class="form-input" style="padding: 0;" oninput="updateFontSize(this.value)">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="closeModal('modal-reader-settings')">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-add-term">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Add Glossary Term</h3>
+        <button class="btn-icon" onclick="closeModal('modal-add-term')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Raw Chinese Term</label>
+          <input type="text" id="term-raw" class="form-input" placeholder="e.g. 金丹期 / 墨大夫">
+        </div>
+        <div class="form-group">
+          <label class="form-label">English Translation</label>
+          <input type="text" id="term-trans" class="form-input" placeholder="e.g. Golden Core Stage / Doctor Mo">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select id="term-category" class="form-select">
+            <option value="Cultivation Realm">Cultivation Realm</option>
+            <option value="Technique">Technique / Martial Art</option>
+            <option value="Item">Item / Pill / Treasure</option>
+            <option value="Character">Character / Title</option>
+            <option value="Faction">Sect / Faction</option>
+            <option value="Location">Location / World</option>
+            <option value="General">General</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Context Notes (Optional)</label>
+          <input type="text" id="term-notes" class="form-input" placeholder="e.g. Third major realm">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('modal-add-term')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitAddTerm()">Save Term</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-import-glossary">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Import Glossary (.txt / .json / .csv)</h3>
+        <button class="btn-icon" onclick="closeModal('modal-import-glossary')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Upload File</label>
+          <input type="file" id="glossary-file-input" accept=".txt,.json,.csv" class="form-input" onchange="handleGlossaryFileUpload(event)">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Or Paste Text (One term per line: 原文 = Translation)</label>
+          <textarea id="glossary-paste-input" class="form-textarea" rows="6" placeholder="金丹期 = Golden Core Stage&#10;墨大夫 = Doctor Mo&#10;青云宗 = Azure Cloud Sect"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('modal-import-glossary')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitGlossaryPaste()">Parse &amp; Import</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"><span id="toast-text">Message</span></div>
+
+  <script>
+    const DEFAULT_SYSTEM_PROMPT = `You are a master literary translator and localization editor of Chinese web novels (Xianxia, Xuanhuan, Wuxia, Danmei, and Urban Fantasy) producing published-book caliber translations (comparable to premium editions by Seven Seas Entertainment, Wuxiaworld, and professional fantasy presses).
+
+INTEGRAL MANDATORY RULE — 100% FULL FIDELITY & ZERO OMISSIONS:
+- You MUST translate EVERY SINGLE SENTENCE, PARAGRAPH, AND DIALOGUE of the chapter from beginning to end without skipping, cutting, condensing, summarizing, or omitting any part of the raw source text.
+- NEVER summarize battle scenes, inner thoughts, comedic banter, cultivation explanations, or system notifications.
+- The translated chapter must have a complete 1:1 narrative and paragraph completeness matching the raw original from first word to last.
+
+Literary Translation Guidelines:
+1. Fluent & Evocative English: Translate with evocative, lyrical, and immersion-first prose. Completely eliminate clunky, mechanical Chinglish and stiff literalisms while honoring the original author's artistic voice, tension, and narrative pacing.
+2. Cultivation & Martial Arts Nuance: Accurately translate Eastern cultivation concepts (Qi, Dantian, Spiritual Roots, Heavenly Tribulation, Divine Consciousness, Dao Comprehension) with consistency and solemn dignity.
+3. Dialogue & Character Voice: Ensure dialogue captures personality, age, hierarchy, humor, and respect/disrespect naturally.
+4. Strict Glossary Enforcement: Always enforce all provided Glossary terms verbatim.
+5. Content Cleanliness: Strip out ONLY external website navigation lines, advertisement slogans, site links, or chapter button text ('上一章', '下一章', '目录', '加入书签', '69shu', '笔趣阁', etc.). Never remove any legitimate story content.
+6. Output Scope: Output strictly the Chapter Title, the entire narrative unabridged, and the Author's Note at the end if one exists. Do not add conversational remarks, translator notes, or preamble.`;
+
+    const SAMPLE_NOVELS = [
+      {
+        id: "novel_1",
+        title: "A Mortal's Journey to Immortality",
+        originalTitle: "凡人修仙传",
+        author: "忘语 (Wang Yu)",
+        description: "An ordinary village boy joins a minor Jianghu sect and embarks upon the treacherous path of immortal cultivation against all odds.",
+        coverUrl: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&auto=format&fit=crop&q=80",
+        currentChapterIndex: 1,
+        chapters: [
+          {
+            index: 1,
+            originalTitle: "第一章 山边小村",
+            translatedTitle: "Chapter 1: The Mountain Village",
+            isTranslated: true,
+            originalContent: `二叔这次回来，是向父亲提出要把他带到青牛镇去，介绍进一个叫“七玄门”的江湖门派。\n\n据说只要通过了入门测试，不仅吃穿不愁，还能学到飞檐走壁的真功夫。每个月甚至能有一笔不菲的银两补贴家用。\n\n韩立心里有些忐忑，但也充满了对外面广阔天地的向往。他默默地看着屋檐下滴落的雨水，双手握紧了小小的包袱。\n\n“立儿，到了门派里，切记要多听少说，莫要惹是生非。”母亲红着眼眶叮嘱道。\n\n韩立重重地点了点头。少年幼小的心灵中，第一次燃起了一股不服命运的火焰。那是通往不可捉摸的仙道的起点。`,
+            translatedContent: `This time, Second Uncle returned to propose taking Han Li to Azure Ox Town, offering to recommend him into a martial sect known as the "Seven Mysteries Sect."\n\nIt was said that so long as one passed the entry trial, food and clothing would be lavishly provided, and one could even learn the legendary martial arts of scaling walls and walking upon air. What was more, every month there was a handsome allowance in silver to support one's family.\n\nWithin Han Li's young chest, nervousness fluttered, yet it was eclipsed by a fierce yearning for the boundless world that lay beyond the mountains. He gazed quietly at the rainwater trickling from the eaves, his knuckles whitening as he gripped his meager cloth bundle.\n\n"Li'er, once you arrive within the sect, remember above all: listen more, speak less, and never court trouble," his mother choked out, her rimmed eyes glistening red.\n\nHan Li nodded heavily. Deep inside the young boy's heart, a spark of defiance against humble fate had ignited for the very first time. Unbeknownst to all, it was the humble threshold to the fathomless path of immortal cultivation.`
+          },
+          {
+            index: 2,
+            originalTitle: "第二章 七玄门试炼",
+            translatedTitle: "Chapter 2: The Seven Mysteries Trial",
+            isTranslated: false,
+            originalContent: `落日峰上，狂风呼啸。\n\n数百名来自各地的稚嫩孩童聚集在崖前，面对着眼前陡峭险峻的竹林悬梯。这正是七玄门的考验之地——赤刃峰。\n\n一名身穿黑袍的中年汉子冷漠地扫视众人，声音如滚雷般传开：“午时之前登顶者，入外门！落后者，原路送返！”\n\n韩立深吸了一口凉气。他的身子骨在同龄人中并不算强壮，但眼神深处却透着一股与年龄不相符的坚毅与冷静。\n\n“出发！”随着一声令下，孩子们蜂拥而上。陡峭的石阶布满青苔，稍不留神就会跌落深谷。韩立没有争抢第一，而是稳扎稳打，按照自己的节奏一步一步向上攀登。`,
+            translatedContent: ""
+          }
+        ]
+      },
+      {
+        id: "novel_2",
+        title: "Battle Through the Heavens",
+        originalTitle: "斗破苍穹",
+        author: "天蚕土豆",
+        description: "Here, there is no magic—only Dou Qi that has reached the absolute peak. Follow Xiao Yan as he reclaims his honor.",
+        coverUrl: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=500&auto=format&fit=crop&q=80",
+        currentChapterIndex: 1,
+        chapters: [
+          {
+            index: 1,
+            originalTitle: "第一章 陨落的天才",
+            translatedTitle: "Chapter 1: The Fallen Prodigy",
+            isTranslated: false,
+            originalContent: `“斗之力，三段！”\n\n望着测验魔石碑上面闪亮得甚至有些刺眼的四个大字，少年面无表情，唇角有着一抹自嘲，紧握的手指，因为大力，而导致略微尖锐的指甲深深的刺进了掌心之中，带来一阵阵钻心的疼痛…\n\n“萧炎，斗之力，三段！级别：低级！”测验魔石碑之旁，一位中年男子，看了一眼碑上所显示出来的信息，语气漠然的将之公布了出来…\n\n中年男子话刚脱口，便是不出意料的在人头汹涌的广场上带起了一阵嘲讽的骚动。\n\n“三段？嘿嘿，果然不出我所料，这个‘天才’这一年又白费了！”\n\n“哎，这废物真是把家族的脸都丢光了。”`,
+            translatedContent: ""
+          }
+        ]
+      }
+    ];
+
+    const DEFAULT_GLOSSARY = [
+      { rawTerm: "金丹期", translatedTerm: "Golden Core Realm", category: "Cultivation Realm", notes: "Core cultivation stage" },
+      { rawTerm: "元婴期", translatedTerm: "Nascent Soul Realm", category: "Cultivation Realm", notes: "High level immortal stage" },
+      { rawTerm: "筑基期", translatedTerm: "Foundation Establishment", category: "Cultivation Realm", notes: "Second realm" },
+      { rawTerm: "墨大夫", translatedTerm: "Doctor Mo", category: "Character", notes: "Han Li's enigmatic first master" },
+      { rawTerm: "韩立", translatedTerm: "Han Li", category: "Character", notes: "Protagonist" },
+      { rawTerm: "萧炎", translatedTerm: "Xiao Yan", category: "Character", notes: "Protagonist of BTTH" },
+      { rawTerm: "七玄门", translatedTerm: "Seven Mysteries Sect", category: "Faction", notes: "Mortal martial sect" },
+      { rawTerm: "青云宗", translatedTerm: "Azure Cloud Sect", category: "Faction", notes: "Cultivation sect" },
+      { rawTerm: "储物袋", translatedTerm: "Storage Pouch", category: "Item", notes: "Spatial expansion bag" },
+      { rawTerm: "灵石", translatedTerm: "Spirit Stones", category: "Item", notes: "Cultivation currency and power source" },
+      { rawTerm: "御剑术", translatedTerm: "Sword Control Technique", category: "Technique", notes: "Telekinetic sword flight" }
+    ];
+
+    let novels = [];
+    let glossary = [];
+    let activeNovelId = null;
+    let activeChapterIndex = 1;
+    let readerMode = "trans_only";
+
+    function loadState() {
+      try {
+        const savedNovels = localStorage.getItem("mizi_novels");
+        novels = savedNovels ? JSON.parse(savedNovels) : SAMPLE_NOVELS;
+        const savedGlossary = localStorage.getItem("mizi_glossary");
+        glossary = savedGlossary ? JSON.parse(savedGlossary) : DEFAULT_GLOSSARY;
+        document.getElementById("setting-api-key").value = localStorage.getItem("mizi_api_key") || "";
+        document.getElementById("setting-model").value = localStorage.getItem("mizi_model") || "gemini-3.1-pro-preview";
+        document.getElementById("setting-system-prompt").value = localStorage.getItem("mizi_prompt") || DEFAULT_SYSTEM_PROMPT;
+        setReaderTheme(localStorage.getItem("mizi_reader_theme") || "reader-theme-parchment");
+        if (localStorage.getItem("mizi_dark_mode") === "true") document.documentElement.setAttribute("data-theme", "dark");
+      } catch (e) {
+        novels = SAMPLE_NOVELS;
+        glossary = DEFAULT_GLOSSARY;
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem("mizi_novels", JSON.stringify(novels));
+      localStorage.setItem("mizi_glossary", JSON.stringify(glossary));
+    }
+
+    function navigateTo(screenId) {
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+      document.getElementById(screenId).classList.add("active");
+      document.querySelectorAll(".nav-tab").forEach(t => t.classList.remove("active"));
+      if (screenId === "screen-bookshelf") document.getElementById("tab-bookshelf")?.classList.add("active");
+      if (screenId === "screen-glossary") document.getElementById("tab-glossary")?.classList.add("active");
+      if (screenId === "screen-settings") document.getElementById("tab-settings")?.classList.add("active");
+      if (screenId === "screen-bookshelf") renderBookshelf();
+      if (screenId === "screen-glossary") renderGlossary();
+    }
+
+    function toggleDarkMode() {
+      const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+      if (isDark) {
+        document.documentElement.removeAttribute("data-theme");
+        localStorage.setItem("mizi_dark_mode", "false");
+      } else {
+        document.documentElement.setAttribute("data-theme", "dark");
+        localStorage.setItem("mizi_dark_mode", "true");
+      }
+    }
+
+    function showToast(text) {
+      const toast = document.getElementById("toast");
+      document.getElementById("toast-text").innerText = text;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2600);
+    }
+
+    function renderBookshelf() {
+      const grid = document.getElementById("novel-grid");
+      grid.innerHTML = "";
+      if (novels.length === 0) {
+        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--text-muted);">
+          <p style="font-size: 1.1rem; margin-bottom: 8px;">Your library is empty.</p>
+          <p style="font-size: 0.85rem;">Click '+ Import URL' or '+ Paste Novel' above to add your first novel!</p>
+        </div>`;
+        return;
+      }
+      novels.forEach(novel => {
+        const total = novel.chapters?.length || 0;
+        const current = novel.currentChapterIndex || 1;
+        const pct = total > 0 ? Math.min(100, Math.round((current / total) * 100)) : 0;
+        const card = document.createElement("div");
+        card.className = "novel-card";
+        card.onclick = () => openNovelDetail(novel.id);
+        card.innerHTML = `
+          <div class="novel-cover">
+            ${novel.coverUrl ? `<img src="${novel.coverUrl}" alt="Cover" onerror="this.style.display='none'">` : ''}
+            <span class="novel-cover-badge">${total} Chs</span>
+            <div class="novel-cover-title">${escapeHtml(novel.title)}</div>
+            <div class="novel-cover-raw">${escapeHtml(novel.originalTitle)}</div>
+          </div>
+          <div class="novel-info">
+            <div class="novel-author">${escapeHtml(novel.author || 'Unknown Author')}</div>
+            <div>
+              <div class="progress-bar"><div class="progress-fill" style="width: ${pct}%"></div></div>
+              <div class="novel-stats"><span>Ch. ${current}</span><span>${pct}% Read</span></div>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function openNovelDetail(novelId) {
+      activeNovelId = novelId;
+      const novel = novels.find(n => n.id === novelId);
+      if (!novel) return;
+
+      const detailCard = document.getElementById("novel-detail-card");
+      detailCard.innerHTML = `
+        <div style="width: 140px; height: 190px; border-radius: 8px; overflow: hidden; background: #064E3B; flex-shrink: 0; position: relative;">
+          ${novel.coverUrl ? `<img src="${novel.coverUrl}" style="width: 100%; height: 100%; object-fit: cover;">` : ''}
+        </div>
+        <div style="flex: 1; min-width: 240px; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h2 style="font-size: 1.4rem; font-weight: 700; line-height: 1.2;">${escapeHtml(novel.title)}</h2>
+            <h3 style="font-size: 0.95rem; font-family: var(--font-chinese); color: var(--primary); margin-top: 2px;">${escapeHtml(novel.originalTitle)}</h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 6px;">Author: ${escapeHtml(novel.author || 'Unknown')}</p>
+            <p style="font-size: 0.85rem; margin-top: 10px; line-height: 1.5; color: var(--text);">${escapeHtml(novel.description || 'No description available.')}</p>
+          </div>
+          <div style="display: flex; gap: 8px; margin-top: 16px;">
+            <button class="btn btn-primary" onclick="startReadingNovel('${novel.id}', ${novel.currentChapterIndex || 1})">Continue Ch. ${novel.currentChapterIndex || 1}</button>
+            <button class="btn btn-outline btn-danger" onclick="deleteNovel('${novel.id}')">Delete Novel</button>
+          </div>
+        </div>
+      `;
+
+      const listContainer = document.getElementById("chapter-list-container");
+      listContainer.innerHTML = "";
+      const chapters = novel.chapters || [];
+      document.getElementById("chapter-count-text").innerText = `${chapters.length} chapters`;
+
+      chapters.forEach(chap => {
+        const item = document.createElement("div");
+        item.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-bottom: 1px solid var(--border); cursor: pointer;";
+        item.onclick = () => startReadingNovel(novel.id, chap.index);
+        item.innerHTML = `
+          <div>
+            <div style="font-weight: 600; font-size: 0.9rem;">${escapeHtml(chap.translatedTitle || chap.originalTitle)}</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-chinese);">${escapeHtml(chap.originalTitle)}</div>
+          </div>
+          <div>${chap.isTranslated ? '<span class="term-chip term-chip-location">Translated</span>' : '<span class="term-chip">Raw</span>'}</div>
+        `;
+        listContainer.appendChild(item);
+      });
+
+      navigateTo("screen-novel-detail");
+    }
+
+    function deleteNovel(novelId) {
+      if (confirm("Remove this novel from your bookshelf?")) {
+        novels = novels.filter(n => n.id !== novelId);
+        saveState();
+        navigateTo("screen-bookshelf");
+        showToast("Novel removed");
+      }
+    }
+
+    function startReadingNovel(novelId, chapterIndex) {
+      activeNovelId = novelId;
+      activeChapterIndex = chapterIndex;
+      const novel = novels.find(n => n.id === novelId);
+      if (!novel) return;
+
+      novel.currentChapterIndex = chapterIndex;
+      saveState();
+
+      const chapter = (novel.chapters || []).find(c => c.index === chapterIndex) || novel.chapters?.[0];
+      if (!chapter) {
+        showToast("Chapter not found");
+        return;
+      }
+
+      document.getElementById("reader-novel-title").innerText = novel.title;
+      document.getElementById("reader-chap-title").innerText = chapter.translatedTitle || chapter.originalTitle;
+
+      renderReaderContent(chapter);
+      navigateTo("screen-reader");
+      document.getElementById("reader-scroll-area").scrollTop = 0;
+    }
+
+    function renderReaderContent(chapter) {
+      const article = document.getElementById("reader-article");
+      const titleToDisplay = chapter.translatedTitle || chapter.originalTitle;
+
+      let bodyHtml = `
+        <h1>${escapeHtml(titleToDisplay)}</h1>
+        <div class="raw-title-sub">${escapeHtml(chapter.originalTitle)}</div>
+      `;
+
+      const rawParas = (chapter.originalContent || "").split("\n").map(p => p.trim()).filter(p => p.length > 0);
+      const transParas = (chapter.translatedContent || "").split("\n").map(p => p.trim()).filter(p => p.length > 0);
+
+      if (readerMode === "raw_only" || (!chapter.isTranslated && readerMode !== "dual_view")) {
+        rawParas.forEach(p => {
+          bodyHtml += `<p class="reader-paragraph" style="font-family: var(--font-chinese);">${escapeHtml(p)}</p>`;
+        });
+      } else if (readerMode === "dual_view") {
+        const maxLen = Math.max(rawParas.length, transParas.length);
+        for (let i = 0; i < maxLen; i++) {
+          const raw = rawParas[i] || "";
+          const trans = transParas[i] || "";
+          bodyHtml += `
+            <div class="dual-pair">
+              ${raw ? `<div class="dual-raw">${escapeHtml(raw)}</div>` : ''}
+              ${trans ? `<div class="dual-trans">${escapeHtml(trans)}</div>` : `<div style="font-size:0.8rem; color:var(--text-muted); font-style:italic;">[Untranslated paragraph]</div>`}
+            </div>
+          `;
+        }
+      } else {
+        if (transParas.length > 0) {
+          transParas.forEach(p => {
+            bodyHtml += `<p class="reader-paragraph">${escapeHtml(p)}</p>`;
+          });
+        } else {
+          bodyHtml += `<div style="text-align: center; padding: 40px 10px; color: var(--text-muted);">
+            <p style="margin-bottom: 12px;">This chapter has not been translated to English yet.</p>
+            <button class="btn btn-primary" onclick="triggerAiTranslate()">Translate Chapter with Gemini AI</button>
+          </div>`;
+          rawParas.forEach(p => {
+            bodyHtml += `<p class="reader-paragraph" style="opacity: 0.5; font-family: var(--font-chinese);">${escapeHtml(p)}</p>`;
+          });
+        }
+      }
+
+      const novel = novels.find(n => n.id === activeNovelId);
+      const prevChap = (novel?.chapters || []).find(c => c.index === activeChapterIndex - 1);
+      const nextChap = (novel?.chapters || []).find(c => c.index === activeChapterIndex + 1);
+
+      bodyHtml += `
+        <div class="reader-footer-nav">
+          <button class="btn btn-outline" ${!prevChap ? 'disabled style="opacity:0.4"' : ''} onclick="startReadingNovel('${activeNovelId}', ${activeChapterIndex - 1})">← Previous Chapter</button>
+          <span style="font-size: 0.8rem; opacity: 0.7;">Chapter ${activeChapterIndex} of ${novel?.chapters?.length || 1}</span>
+          <button class="btn btn-outline" ${!nextChap ? 'disabled style="opacity:0.4"' : ''} onclick="startReadingNovel('${activeNovelId}', ${activeChapterIndex + 1})">Next Chapter →</button>
+        </div>
+      `;
+
+      article.innerHTML = bodyHtml;
+
+      const transBtn = document.getElementById("btn-translate-now");
+      if (chapter.isTranslated) {
+        transBtn.innerHTML = `✓ Translated`;
+        transBtn.className = "btn btn-outline btn-sm";
+      } else {
+        transBtn.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"/></svg><span>Translate</span>`;
+        transBtn.className = "btn btn-accent btn-sm";
+      }
+    }
+
+    function backFromReader() {
+      if (activeNovelId) openNovelDetail(activeNovelId);
+      else navigateTo("screen-bookshelf");
+    }
+
+    function setReaderTheme(themeClass) {
+      document.body.classList.remove("reader-theme-parchment", "reader-theme-jade", "reader-theme-dark", "reader-theme-light", "reader-theme-sepia");
+      document.body.classList.add(themeClass);
+      localStorage.setItem("mizi_reader_theme", themeClass);
+    }
+
+    function updateReaderMode(mode) {
+      readerMode = mode;
+      const novel = novels.find(n => n.id === activeNovelId);
+      const chapter = (novel?.chapters || []).find(c => c.index === activeChapterIndex);
+      if (chapter) renderReaderContent(chapter);
+    }
+
+    function updateFontSize(val) {
+      document.documentElement.style.setProperty("--font-size", `${val}px`);
+      document.getElementById("font-size-label").innerText = `${val}px`;
+    }
+
+    function openReaderSettings() {
+      document.getElementById("reader-mode-select").value = readerMode;
+      openModal("modal-reader-settings");
+    }
+
+    /* Translation with Zero Cuts / Zero Omissions */
+    async function triggerAiTranslate() {
+      const novel = novels.find(n => n.id === activeNovelId);
+      const chapter = (novel?.chapters || []).find(c => c.index === activeChapterIndex);
+      if (!novel || !chapter) return;
+
+      const apiKey = localStorage.getItem("mizi_api_key") || "";
+      if (!apiKey) {
+        alert("Please set your Gemini API Key in Settings first to enable literary translation! (Get your free key at aistudio.google.com)");
+        navigateTo("screen-settings");
+        return;
+      }
+
+      const transBtn = document.getElementById("btn-translate-now");
+      transBtn.innerHTML = `<span class="spinner"></span> Translating...`;
+      transBtn.disabled = true;
+
+      try {
+        const model = localStorage.getItem("mizi_model") || "gemini-3.1-pro-preview";
+        const systemPrompt = localStorage.getItem("mizi_prompt") || DEFAULT_SYSTEM_PROMPT;
+
+        const result = await callGeminiTranslation(chapter.originalTitle, chapter.originalContent, glossary, systemPrompt, apiKey, model);
+
+        chapter.translatedTitle = result.title;
+        chapter.translatedContent = result.content;
+        chapter.isTranslated = true;
+        saveState();
+
+        showToast("Chapter translated completely with full fidelity!");
+        renderReaderContent(chapter);
+      } catch (err) {
+        console.error("Translation error:", err);
+        alert("Translation error: " + (err.message || "Failed to communicate with Gemini API"));
+      } finally {
+        transBtn.disabled = false;
+        transBtn.innerHTML = `✓ Translated`;
+      }
+    }
+
+    async function callGeminiTranslation(rawTitle, rawContent, termsList, systemPrompt, apiKey, model) {
+      let glossaryPrompt = "";
+      if (termsList && termsList.length > 0) {
+        const sorted = [...termsList].sort((a, b) => b.rawTerm.length - a.rawTerm.length);
+        glossaryPrompt = "\n\nCRITICAL GLOSSARY REFERENCE (Strictly enforce these exact translations):\n";
+        sorted.forEach(t => {
+          glossaryPrompt += `• ${t.rawTerm} = ${t.translatedTerm}${t.notes ? ` (${t.notes})` : ''}\n`;
+        });
+      }
+
+      const fullInstruction = systemPrompt + glossaryPrompt;
+      const cleanRaw = cleanRawText(rawContent);
+
+      if (cleanRaw.length <= 3500) {
+        return await translateSingleChunk(rawTitle, cleanRaw, fullInstruction, apiKey, model);
+      } else {
+        const chunks = splitIntoParagraphChunks(cleanRaw, 2500);
+        let finalTitle = "";
+        let combinedParts = [];
+
+        for (let i = 0; i < chunks.length; i++) {
+          const chunkTitle = i === 0 ? rawTitle : "";
+          const partResult = await translateSingleChunk(chunkTitle, chunks[i], fullInstruction, apiKey, model, `Section ${i + 1} of ${chunks.length}`);
+          if (i === 0 && partResult.title) finalTitle = partResult.title;
+          if (partResult.content) combinedParts.push(partResult.content);
+        }
+
+        return { title: finalTitle || rawTitle, content: combinedParts.join("\n\n") };
+      }
+    }
+
+    async function translateSingleChunk(rawTitle, chunkText, fullInstruction, apiKey, model, sectionNotice = "") {
+      const userPrompt = `Translate the following Chinese web novel chapter into published-book-quality, literary, and natural English prose.
+${sectionNotice ? `[SECTION: ${sectionNotice}]` : ''}
+INTEGRAL MANDATORY RULE (100% FIDELITY — NEVER CUT OR OMIT CONTENT):
+- You MUST translate EVERY SINGLE SENTENCE, PARAGRAPH, AND DIALOGUE completely from start to finish without skipping, cutting, condensing, summarizing, or omitting any part of the raw story content.
+- Never summarize battle scenes, comedic banter, inner thoughts, cultivation descriptions, or system status notifications.
+- The translation MUST preserve the full, unabridged length and narrative detail of the original text with 100% completeness.
+
+CONTENT PURIFICATION:
+- Remove ONLY pure external website navigation lines and ad buttons (e.g. '上一章', '下一章', '目录', '加入书签', '69shu', '笔趣阁', etc.). Never truncate legitimate story text.
+
+TITLE:
+${rawTitle}
+
+CONTENT:
+${chunkText}
+
+Please format your response strictly as:
+TITLE: <Translated Title>
+CONTENT:
+<Translated Content paragraphs>`;
+
+      const body = {
+        contents: [{ parts: [{ text: userPrompt }] }],
+        systemInstruction: { parts: [{ text: fullInstruction }] },
+        generationConfig: { temperature: 0.35, topP: 0.95, maxOutputTokens: 8192 }
+      };
+
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const resp = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+
+      if (!resp.ok) {
+        const errText = await resp.text();
+        throw new Error(`HTTP ${resp.status}: ${errText}`);
+      }
+
+      const data = await resp.json();
+      const rawOutput = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+      return parseGeminiOutput(rawOutput, rawTitle);
+    }
+
+    function parseGeminiOutput(text, fallbackTitle) {
+      let title = "";
+      let contentLines = [];
+      let inContent = false;
+
+      const lines = text.split("\n");
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (trimmed.toLowerCase().startsWith("title:") && !inContent) {
+          title = trimmed.substring(6).trim();
+        } else if (trimmed.toLowerCase().startsWith("content:")) {
+          inContent = true;
+        } else if (inContent) {
+          contentLines.push(line);
+        } else if (!title && trimmed.length > 0 && !trimmed.startsWith("#")) {
+          title = trimmed;
+        } else if (title && !inContent) {
+          inContent = true;
+          contentLines.push(line);
+        }
+      }
+
+      return {
+        title: title || fallbackTitle,
+        content: contentLines.join("\n").trim() || text.trim()
+      };
+    }
+
+    function cleanRawText(content) {
+      return content.split("\n").filter(l => {
+        const trimmed = l.trim();
+        if (!trimmed) return true;
+        const isNav = /^(上一章|下一章|上一页|下一页|目录|加入书签|投票推荐|返回书页|加入书架|快捷键.*|温馨提示.*)$/.test(trimmed);
+        const isAd = /(69shu|笔趣阁|biquge|www\.|http:\/\/|https:\/\/|\.com|\.net|最新网址|本章完)/i.test(trimmed) && trimmed.length < 50;
+        return !isNav && !isAd;
+      }).join("\n");
+    }
+
+    function splitIntoParagraphChunks(content, targetChunkSize) {
+      const paragraphs = content.split("\n");
+      const chunks = [];
+      let cur = "";
+
+      for (const p of paragraphs) {
+        if (cur.length > 0 && cur.length + p.length > targetChunkSize) {
+          chunks.push(cur.trim());
+          cur = "";
+        }
+        if (cur.length > 0) cur += "\n";
+        cur += p;
+      }
+      if (cur.trim().length > 0) chunks.push(cur.trim());
+      return chunks.length > 0 ? chunks : [content];
+    }
+
+    /* Web Scraping & Manual Add */
+    function openImportModal() {
+      document.getElementById("import-url-input").value = "";
+      openModal("modal-import-url");
+    }
+
+    async function submitImportUrl() {
+      const url = document.getElementById("import-url-input").value.trim();
+      if (!url) return;
+      closeModal("modal-import-url");
+      showToast("Fetching novel via web proxy...");
+
+      try {
+        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+        const res = await fetch(proxyUrl);
+        if (!res.ok) throw new Error("Could not fetch page");
+        const html = await res.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, "text/html");
+
+        let title = doc.querySelector("meta[property='og:novel:book_name'], meta[property='og:title']")?.getAttribute("content")
+          || doc.querySelector("h1, .booktitle")?.textContent?.trim()
+          || doc.title.split(/[-_]/)[0].trim() || "Imported Novel";
+
+        let author = doc.querySelector("meta[property='og:novel:author']")?.getAttribute("content")
+          || doc.querySelector(".author, span:contains('作者')")?.textContent?.replace("作者：", "")?.trim() || "Unknown";
+
+        let desc = doc.querySelector("meta[property='og:description'], .intro")?.getAttribute("content")
+          || doc.querySelector(".intro, #intro")?.textContent?.trim() || "";
+
+        const links = Array.from(doc.querySelectorAll("a[href]")).filter(a => {
+          const t = a.textContent.trim();
+          return t.includes("第") || t.includes("章") || /\d+/.test(t);
+        });
+
+        const chapters = [];
+        let idx = 1;
+        const seenHrefs = new Set();
+
+        for (const a of links) {
+          const href = a.getAttribute("href");
+          const cTitle = a.textContent.trim();
+          if (href && !seenHrefs.has(href) && cTitle.length < 80) {
+            seenHrefs.add(href);
+            chapters.push({
+              index: idx++,
+              originalTitle: cTitle,
+              translatedTitle: "",
+              originalContent: "Click 'Translate' or view raw chapter content.",
+              translatedContent: "",
+              isTranslated: false
+            });
+            if (chapters.length >= 100) break;
+          }
+        }
+
+        const newNovel = {
+          id: "novel_" + Date.now(),
+          title: title,
+          originalTitle: title,
+          author: author,
+          description: desc,
+          coverUrl: "",
+          currentChapterIndex: 1,
+          chapters: chapters.length > 0 ? chapters : [
+            { index: 1, originalTitle: "第一章", translatedTitle: "", originalContent: "Sample chapter content", translatedContent: "", isTranslated: false }
+          ]
+        };
+
+        novels.unshift(newNovel);
+        saveState();
+        renderBookshelf();
+        showToast(`Imported: ${title} (${chapters.length} chapters)`);
+      } catch (err) {
+        alert("Direct web scraping was restricted by the host server. Opening the Manual Paste modal so you can paste the text directly!");
+        openPasteModal();
+      }
+    }
+
+    function openPasteModal() {
+      document.getElementById("paste-novel-title").value = "";
+      document.getElementById("paste-novel-author").value = "";
+      document.getElementById("paste-chap-title").value = "第一章";
+      document.getElementById("paste-chap-content").value = "";
+      openModal("modal-paste-novel");
+    }
+
+    function submitPasteNovel() {
+      const title = document.getElementById("paste-novel-title").value.trim() || "Untitled Novel";
+      const author = document.getElementById("paste-novel-author").value.trim() || "Unknown";
+      const chapTitle = document.getElementById("paste-chap-title").value.trim() || "Chapter 1";
+      const content = document.getElementById("paste-chap-content").value.trim();
+
+      if (!content) {
+        alert("Please paste the chapter text");
+        return;
+      }
+
+      const newNovel = {
+        id: "novel_" + Date.now(),
+        title: title,
+        originalTitle: title,
+        author: author,
+        description: "Manually imported novel.",
+        currentChapterIndex: 1,
+        chapters: [{ index: 1, originalTitle: chapTitle, translatedTitle: "", originalContent: content, translatedContent: "", isTranslated: false }]
+      };
+
+      novels.unshift(newNovel);
+      saveState();
+      closeModal("modal-paste-novel");
+      renderBookshelf();
+      showToast(`Added: ${title}`);
+    }
+
+    /* Glossary Operations */
+    function renderGlossary() {
+      const tbody = document.getElementById("glossary-table-body");
+      tbody.innerHTML = "";
+      const query = (document.getElementById("glossary-search").value || "").toLowerCase().trim();
+      const catFilter = document.getElementById("glossary-category-filter").value;
+
+      const filtered = glossary.filter(t => {
+        const matchesQuery = !query || t.rawTerm.toLowerCase().includes(query) || t.translatedTerm.toLowerCase().includes(query);
+        const matchesCat = catFilter === "ALL" || t.category === catFilter;
+        return matchesQuery && matchesCat;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 24px;">No matching glossary terms found.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(term => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td style="font-family: var(--font-chinese); font-weight: 600;">${escapeHtml(term.rawTerm)}</td>
+          <td style="font-weight: 600; color: var(--primary);">${escapeHtml(term.translatedTerm)}</td>
+          <td><span class="term-chip ${getCategoryChipClass(term.category)}">${escapeHtml(term.category || 'General')}</span></td>
+          <td style="font-size: 0.78rem; color: var(--text-muted);">${escapeHtml(term.notes || '—')}</td>
+          <td style="text-align: right;"><button class="btn btn-outline btn-sm btn-danger" onclick="deleteGlossaryTerm('${escapeHtml(term.rawTerm)}')">Delete</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function getCategoryChipClass(cat) {
+      if (!cat) return "";
+      const lower = cat.toLowerCase();
+      if (lower.includes("realm")) return "term-chip-cultivation";
+      if (lower.includes("technique")) return "term-chip-technique";
+      if (lower.includes("item")) return "term-chip-item";
+      if (lower.includes("character")) return "term-chip-character";
+      if (lower.includes("faction") || lower.includes("sect")) return "term-chip-faction";
+      if (lower.includes("location")) return "term-chip-location";
+      return "";
+    }
+
+    function openAddTermModal() {
+      document.getElementById("term-raw").value = "";
+      document.getElementById("term-trans").value = "";
+      document.getElementById("term-notes").value = "";
+      openModal("modal-add-term");
+    }
+
+    function submitAddTerm() {
+      const raw = document.getElementById("term-raw").value.trim();
+      const trans = document.getElementById("term-trans").value.trim();
+      const cat = document.getElementById("term-category").value;
+      const notes = document.getElementById("term-notes").value.trim();
+      if (!raw || !trans) return;
+
+      glossary = glossary.filter(t => t.rawTerm !== raw);
+      glossary.push({ rawTerm: raw, translatedTerm: trans, category: cat, notes: notes || null });
+      saveState();
+      closeModal("modal-add-term");
+      renderGlossary();
+      showToast(`Added: ${raw} = ${trans}`);
+    }
+
+    function deleteGlossaryTerm(rawTerm) {
+      glossary = glossary.filter(t => t.rawTerm !== rawTerm);
+      saveState();
+      renderGlossary();
+      showToast("Term deleted");
+    }
+
+    function openGlossaryImportModal() {
+      document.getElementById("glossary-paste-input").value = "";
+      openModal("modal-import-glossary");
+    }
+
+    function handleGlossaryFileUpload(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => importGlossaryText(e.target.result);
+      reader.readAsText(file);
+    }
+
+    function submitGlossaryPaste() {
+      const text = document.getElementById("glossary-paste-input").value.trim();
+      if (text) importGlossaryText(text);
+    }
+
+    function importGlossaryText(text) {
+      let count = 0;
+      if (text.trim().startsWith("[")) {
+        try {
+          const arr = JSON.parse(text);
+          arr.forEach(item => {
+            const raw = item.rawTerm || item.chinese || item.raw || "";
+            const trans = item.translatedTerm || item.english || item.translation || "";
+            if (raw && trans) {
+              glossary = glossary.filter(t => t.rawTerm !== raw);
+              glossary.push({ rawTerm: raw.trim(), translatedTerm: trans.trim(), category: item.category || categorizeChineseTerm(raw), notes: item.notes || null });
+              count++;
+            }
+          });
+        } catch (e) {}
+      }
+
+      if (count === 0) {
+        for (const line of text.split("\n")) {
+          const l = line.trim();
+          if (!l || l.startsWith("#") || l.startsWith("//")) continue;
+          let parts = l.includes("=") ? l.split("=") : l.includes(":") ? l.split(":") : l.includes(",") ? l.split(",") : [];
+          if (parts.length >= 2) {
+            const raw = parts[0].trim().replace(/^[•\-\*]\s*/, "");
+            const trans = parts[1].trim();
+            const notes = parts[2] ? parts[2].trim() : null;
+            if (raw && trans) {
+              glossary = glossary.filter(t => t.rawTerm !== raw);
+              glossary.push({ rawTerm: raw, translatedTerm: trans, category: categorizeChineseTerm(raw), notes: notes });
+              count++;
+            }
+          }
+        }
+      }
+
+      saveState();
+      closeModal("modal-import-glossary");
+      renderGlossary();
+      showToast(`Imported ${count} terminology entries!`);
+    }
+
+    function categorizeChineseTerm(raw) {
+      if (/(期|境|层|阶|段|渡劫|飞升|结丹|元婴|化神|练气|筑基|合体|大乘|仙王|天道)/.test(raw)) return "Cultivation Realm";
+      if (/(术|功|法|诀|拳|掌|剑法|刀法|秘籍|心法|真经|阵|御剑)/.test(raw)) return "Technique";
+      if (/(丹|药|草|戒|符|宝|炉|珠|镜|瓶|灵石|法宝|灵器|仙器|神器|储物袋)/.test(raw)) return "Item";
+      if (/(宗|门|派|阁|谷|庄|教|殿|盟|堂|院|氏|家)/.test(raw)) return "Faction";
+      if (/(界|域|洲|峰|山|海|城|国|渊|谷|洞|岛|森林|秘境|大陆)/.test(raw)) return "Location";
+      if (/(老祖|仙子|大夫|师尊|师伯|师兄|师弟|师妹|圣子|圣女|长老|门主|宗主|道友|前辈)/.test(raw)) return "Character";
+      return "General";
+    }
+
+    function exportGlossaryToClipboard() {
+      const text = glossary.map(t => `${t.rawTerm} = ${t.translatedTerm} [${t.category}]`).join("\n");
+      navigator.clipboard.writeText(text).then(() => showToast("Glossary copied to clipboard!"));
+    }
+
+    /* Settings & Backup */
+    function saveApiKey(val) { localStorage.setItem("mizi_api_key", val.trim()); showToast("API key saved"); }
+    function saveModel(val) { localStorage.setItem("mizi_model", val); showToast("Model saved"); }
+    function saveSystemPrompt(val) { localStorage.setItem("mizi_prompt", val); showToast("Prompt saved"); }
+    function resetSystemPrompt() {
+      document.getElementById("setting-system-prompt").value = DEFAULT_SYSTEM_PROMPT;
+      localStorage.setItem("mizi_prompt", DEFAULT_SYSTEM_PROMPT);
+      showToast("Reset to integral default");
+    }
+
+    function exportFullBackup() {
+      const backup = { app: "Mizi", version: "1.0", date: new Date().toISOString(), novels: novels, glossary: glossary };
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `mizi_library_backup_${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importFullBackup(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (data.novels) novels = data.novels;
+          if (data.glossary) glossary = data.glossary;
+          saveState();
+          renderBookshelf();
+          renderGlossary();
+          showToast("Library restored successfully!");
+        } catch (err) {
+          alert("Invalid backup JSON file: " + err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function clearAllData() {
+      if (confirm("Reset all books and glossaries back to defaults?")) {
+        localStorage.clear();
+        loadState();
+        renderBookshelf();
+        renderGlossary();
+        showToast("All data reset");
+      }
+    }
+
+    function openModal(id) { document.getElementById(id).classList.add("active"); }
+    function closeModal(id) { document.getElementById(id).classList.remove("active"); }
+    document.querySelectorAll(".modal-overlay").forEach(overlay => {
+      overlay.addEventListener("click", e => { if (e.target === overlay) overlay.classList.remove("active"); });
+    });
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      loadState();
+      renderBookshelf();
+    });
+  </script>
+</body>
+</html>
