@@ -1,0 +1,6 @@
+{
+  "name": "Mizi",
+  "description": "Mizi - AI Chinese Novel Library & Translator. Accurately translate raw Chinese novels via link with AI-powered contextual translation, custom glossaries, offline reader, and customizable font themes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
